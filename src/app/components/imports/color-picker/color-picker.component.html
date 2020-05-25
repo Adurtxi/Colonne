@@ -1,0 +1,24 @@
+<div class="color-picker">
+    <div class="summary-info pt-0" (click)="openModal(colorsModal, 'sm')">
+        <div class="info">
+            <p class="style text-dark">{{ heading }}</p>
+            <p class="style-value text-primary">{{ color }}</p>
+        </div>
+
+        <div class="circle" [ngStyle]="{'background': color}"></div>
+    </div>
+</div>
+
+<ng-template #colorsModal let-close="close">
+    <div class="modal-body">
+        <div class="colors">
+            <div class="row">
+                <ng-container *ngFor="let paint of defaultColors">
+                    <div class="col-3" (click)="changeColor(paint)" *ngIf="showColor(paint) == false">
+                        <div class="circle m-1" [ngStyle]="{ background: paint }"></div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</ng-template>
