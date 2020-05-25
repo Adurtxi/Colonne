@@ -1,1 +1,350 @@
-/* You can add global styles to this file, and also import other style files */
+$primary: #1fab89;
+$secondary: #226b80;
+
+@import "node_modules/bootstrap/scss/bootstrap";
+
+$fa-font-path: "assets/webfonts";
+
+@import "node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+@import "node_modules/@fortawesome/fontawesome-free/scss/regular.scss";
+
+/* Sticky footer */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  background-color: #fbfbfb;
+}
+
+.base-content {
+  margin-bottom: 4rem;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  height: 2rem;
+  line-height: 2rem;
+  font-size: 0.75rem;
+}
+
+h1 {
+  font-size: 1.4em;
+}
+
+h2 {
+  font-size: 1.3em;
+}
+
+h3 {
+  font-size: 1.2em;
+}
+
+.inverseCard {
+  background-color: $dark;
+  color: $light;
+}
+
+/* Avatars */
+.avatar-sm {
+  width: 40px;
+  height: 40px;
+  border-radius: 900px;
+}
+
+.avatar-md {
+  width: 60px;
+  height: 60px;
+  border-radius: 900px;
+}
+
+.avatar-lg {
+  width: 100px;
+  height: 100px;
+  border-radius: 900px;
+}
+
+.avatar-xlg {
+  width: 200px;
+  height: 200px;
+  border-radius: 900px;
+}
+
+/* ROUNDED */
+.rounded-10 {
+  border-radius: 10px !important;
+}
+
+.rounded-25 {
+  border-radius: 25px !important;
+}
+
+.rounded-50 {
+  border-radius: 50px !important;
+}
+
+.rounded-card-img {
+  margin: 0px;
+  width: 100%;
+  height: 100%;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+}
+
+.toast {
+  padding-left: 10px;
+  border-radius: 25px !important;
+  padding-right: 10px;
+}
+
+.rounded-top-25 {
+  border-top-left-radius: 25px !important;
+  border-top-right-radius: 25px !important;
+}
+
+.rounded-bottom-25 {
+  border-bottom-left-radius: 25px !important;
+  border-bottom-right-radius: 25px !important;
+}
+
+.rounded-left-25 {
+  border-top-left-radius: 25px !important;
+  border-bottom-left-radius: 25px !important;
+}
+
+.rounded-right-25 {
+  border-top-right-radius: 25px !important;
+  border-bottom-right-radius: 25px !important;
+}
+
+.rounded-left-50 {
+  border-top-left-radius: 50px !important;
+  border-bottom-left-radius: 50px !important;
+}
+
+.rounded-right-50 {
+  border-top-right-radius: 50px !important;
+  border-bottom-right-radius: 50px !important;
+}
+
+.rounded-top-50 {
+  border-top-left-radius: 50px !important;
+  border-top-right-radius: 50px !important;
+}
+
+.rounded-bottom-50 {
+  border-bottom-left-radius: 25px !important;
+  border-bottom-right-radius: 25px !important;
+}
+
+.rounded-top-10 {
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+}
+
+.rounded-bottom-10 {
+  border-bottom-left-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+.rounded-left-10 {
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+}
+
+.rounded-right-10 {
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+.rounded-input {
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  height: auto;
+}
+
+.rounded-input-button {
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+
+.rounded-input-button:disabled,
+.rounded-input-button[disabled] {
+  border-top-right-radius: 25px !important;
+  border-bottom-right-radius: 25px !important;
+}
+
+.no-rounded {
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+}
+
+.no-rounded-top {
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+}
+
+.no-rounded-left {
+  border-top-left-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+}
+
+.no-rounded-right {
+  border-top-right-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+}
+
+.no-rounded-bottom {
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+}
+
+/* CURSORS */
+
+.default-cursor {
+  cursor: default;
+}
+
+.mouse-zoom {
+  cursor: zoom-in;
+}
+
+.mouse-zoom-out {
+  cursor: zoom-out;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+/* Chip */
+
+.chip {
+  display: inline-block;
+  padding: 0 20px;
+  height: 35px;
+  font-size: 14px;
+  line-height: 35px;
+  border-radius: 25px;
+  background-color: rgb(240, 240, 240);
+  font-family: "CerebriSans-Light", sans-serif;
+  cursor: pointer;
+}
+
+.chip img {
+  float: left;
+  margin: 0 10px 0 -25px;
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+}
+
+.circle {
+  $size: 20px;
+  height: $size;
+  width: $size;
+  box-sizing: border-box;
+  border-radius: 100%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.14);
+}
+
+/* DARKMODE */
+[data-theme="dark"] {
+  background-color: rgba(42, 42, 46, 1);
+  color: #eee;
+
+  .modal-header {
+    h5 {
+      color: #343a40;
+    }
+  }
+
+  .list-group-item {
+    background-color: #343a40;
+  }
+
+  .modal-body {
+    background-color: #343a40;
+  }
+
+  input {
+    border-color: rgb(40, 40, 40);
+    color: white;
+    background-color: rgb(40, 40, 40);
+  }
+
+  input:focus {
+    border-color: rgb(50, 50, 50);
+    color: white;
+    background-color: rgb(50, 50, 50);
+  }
+
+  textarea {
+    border-color: rgb(40, 40, 40);
+    color: white;
+    background-color: rgb(40, 40, 40);
+  }
+
+  textarea:focus {
+    border-color: rgb(50, 50, 50);
+    color: white;
+    background-color: rgb(50, 50, 50);
+  }
+
+  select {
+    border-color: rgb(40, 40, 40);
+    color: white;
+    background-color: rgb(40, 40, 40);
+  }
+
+  .table {
+    color: #eee;
+  }
+
+  .table-bordered {
+    th {
+      border: 1px solid #707070;
+    }
+    td {
+      border: 1px solid #707070;
+    }
+  }
+
+  .modal-header {
+    h5 {
+      color: #eee;
+    }
+
+    background-color: #343a40;
+  }
+
+  .modal-footer {
+    background-color: #343a40;
+  }
+
+  .badge-dark {
+    border: 2px solid #fff;
+  }
+
+  .card {
+    background-color: #343a40;
+  }
+
+  .bg-light {
+    background-color: #343a40;
+  }
+
+  .btn-light {
+    color: #fff;
+  }
+
+  .text-dark {
+    color: #eee !important;
+  }
+}
