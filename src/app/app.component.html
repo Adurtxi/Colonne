@@ -1,0 +1,38 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" routerLink="home">
+            <!--<img src="./assets/images/logo.png" width="128" height="42" class="d-inline-block align-top" alt="Logo" />-->
+            Colonne
+        </a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" [attr.aria-expanded]="!isCollapsed" (click)="toggleMenu()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+        <div class="collapse navbar-collapse" id="appNavigation" [ngbCollapse]="isCollapsed">
+            <div class="navbar-nav mr-auto">
+                <a class="nav-link" routerLink="home" routerLinkActive="active">
+                    <i class="fas fa-home mr-1"></i> Inicio
+                </a>
+                <a class="nav-link" routerLink="help" routerLinkActive="active">
+                    <i class="fas fa-question mr-1"></i> Ayuda
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<router-outlet></router-outlet>
+
+<footer class="w-100">
+    <div class="bg-dark container-fluid">
+        <div class="container text-light">
+            <div class="row">
+                <div class="col-12 text-center text-sm-left col-sm-8">
+                    Copyright © 2019 Colonne
+                </div>
+                <div class="col-12 text-center text-sm-right col-sm-4">
+                    v0.0.1 by @adurtxi
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
