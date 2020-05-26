@@ -402,6 +402,7 @@ export class HomeComponent implements OnInit {
     this.closeLandModal();
   }
 
+  // Mostrar correctamente las opciones de movimiento
   pushTerrain(index, selectableTerrains) {
     for (let e = 1; e < this.board.row + 1; e++) {
 
@@ -432,8 +433,8 @@ export class HomeComponent implements OnInit {
       let moved = false;
 
       // Si el terreno destino no tiene dueño asignamos jugador 
-      if (this.mLand().userId == 0) {
-        this.mLand().userId += this.turnPlayer().id;
+      if (this.mLand().userId == 0 || this.mLand().userId == this.turnPlayer().id) {
+        this.mLand().userId = this.turnPlayer().id;
         this.mLand().warriors += this.warriorsQuantity;
 
         moved = true;
