@@ -407,20 +407,12 @@ export class HomeComponent implements OnInit {
     for (let e = 1; e < this.board.row + 1; e++) {
 
       // Izquierda
-      if (this.sLandIndex == (this.board.row * e)) {
-
-        if (selectableTerrains[index] == (this.board.row * e - 1)) {
-          return false;
-        }
+      if (this.sLandIndex == (this.board.row * e) && selectableTerrains[index] == (this.board.row * e - 1)) {
+        return false;
       }
-
       // Derecha
-      else if (this.sLandIndex == (this.board.row * e) - 1) {
-
-        if (selectableTerrains[index] == (this.board.row * e)) {
-          return false;
-        }
-
+      else if (this.sLandIndex == (this.board.row * e) - 1 && selectableTerrains[index] == (this.board.row * e)) {
+        return false;
       }
     }
 
