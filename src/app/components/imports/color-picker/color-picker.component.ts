@@ -14,7 +14,7 @@ export class ColorPickerComponent {
 
     modal;
 
-    defaultColors: string[] = ['#ff0000', '#8000ff', '#ff00bf', '#ffff00', '#00ff00', '#0000ff', '#fe9a2e'];
+    defaultColors: string[] = ['#68c20e', '#1581da', '#4a0ec2', '#e81010', '#f1ed0d', '#f10d97', '#19d1ce', '#f2840f', '#7b4716', '#1acfa0', '#3e3e3e'];
 
     constructor(
         private modalService: NgbModal

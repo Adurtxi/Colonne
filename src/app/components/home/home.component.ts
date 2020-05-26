@@ -68,21 +68,21 @@ export class HomeComponent implements OnInit {
       {
         "id": 1,
         "name": "Adur",
-        "color": "#00ff00",
+        "color": "#68c20e",
         "warriors": 0,
         "points": 0,
       },
       {
         "id": 2,
         "name": "Jon",
-        "color": "#0000ff",
+        "color": "#d5d81f",
         "warriors": 0,
         "points": 0,
       },
       {
         "id": 3,
         "name": "Noe",
-        "color": "#ff0000",
+        "color": "#e81010",
         "warriors": 0,
         "points": 0,
       }

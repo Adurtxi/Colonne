@@ -97,7 +97,7 @@
 
                 <div class="row mb-4">
                     <div class="col-lg-2 col-md-4 col-sm-4">
-                        Ronda {{ roundNumber }}
+                        <h1 class="text-light">Ronda {{ roundNumber }}</h1>
                     </div>
                 </div>
 
@@ -105,7 +105,8 @@
                 <div class="row">
                     <ng-container *ngFor="let boardLand of boardLands; let i = index">
                         <div [class]="['mb-4', board.col]">
-                            <div class="card rounded-25 pointer" (click)="openLandModal(landModal, i)">
+                            <div class="card rounded-25 pointer" (click)="openLandModal(landModal, i)" [ngStyle]="boardLand.userId > 0 
+                                && {'background-color': findPlayerById(boardLand.userId).color, 'color': '#fff'}">
                                 <div class="card-body">
                                     <h1 class="text-center mt-1">
                                         <ng-container *ngIf="boardLand.warriors > 0">
@@ -124,8 +125,9 @@
 
             <!-- Jugadores -->
             <div class="col-lg-2 col-md-6 col-sm-6">
-                <div class="d-flex justify-content-center mb-4">
-                    {{ countdown }}
+                <div class="d-flex justify-content-center mb-4 bg-light rounded-25 pt-1">
+                    Tiempo:
+                    <h1 class="ml-4">{{ countdown }}</h1>
                 </div>
 
                 <div class="card rounded-25 mb-4" *ngFor="let player of players" [ngClass]=" {
