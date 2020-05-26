@@ -127,14 +127,26 @@
                     <ng-container *ngIf="warriorsQuantity > 0">
                         <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
                             <div class="card rounded-25 pointer" (click)="selectTerrainToMove(i)" [ngStyle]="canMove(i) 
-                                && {'background-color': turnPlayer().color}">
+                                && {'background-color': turnPlayer().color, 'color': '#fff'}">
                                 <div class="card-body">
                                     <h1 class="text-center mt-1">
-                                        <ng-container *ngIf="boardLand.warriors > 0">
-                                            {{boardLand.warriors}}
+                                        <ng-container *ngIf="canMove(i) && boardLand.userId != 0 && boardLand.userId != turnPlayer().id">
+                                            <img src="assets/img/attack.png" style="width: 50px;" alt="Atacar">
+                                            <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
                                         </ng-container>
-                                        <ng-container *ngIf="boardLand.warriors == 0">
-                                            <i class="fas fa-globe-europe"></i>
+                                        <ng-container *ngIf="!canMove(i) && boardLand.userId != 0 && boardLand.userId != turnPlayer().id">
+                                            <img src="assets/img/castle.png" style="width: 50px;" alt="Atacar">
+                                            <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
+                                        </ng-container>
+                                        <ng-container *ngIf="boardLand.userId == turnPlayer().id">
+                                            <img src="assets/img/person.png" style="width: 50px;" alt="Mover">
+                                            <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
+                                        </ng-container>
+                                        <ng-container *ngIf="canMove(i) && boardLand.userId == 0">
+                                            <img src="assets/img/conquest.png" style="width: 50px;" alt="Conquistar">
+                                        </ng-container>
+                                        <ng-container *ngIf="!canMove(i) && boardLand.userId == 0">
+                                            <img src="assets/img/land.png" style="width: 50px;" alt="Terreno">
                                         </ng-container>
                                     </h1>
                                 </div>
