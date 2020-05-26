@@ -18,6 +18,7 @@ export class HomeComponent implements OnInit {
   boardLands; // Tierras del tablero
 
   sLandIndex; //Index del terreno seleccionado
+  mLandIndex; //Index del terreno a mover
 
   countdown = 30; // Cuenta atras
 
@@ -25,36 +26,45 @@ export class HomeComponent implements OnInit {
 
   roundNumber = 0; // Número de ronda
 
+  warriorsQuantity = 0; // Cantidad de guerreros a mover
+
+  selectableTerrains = [];
+
   boardTypes = [
     {
       'id': 1,
       'text': '2 x 2',
       'col': 'col-6',
       'cols': 4,
+      'row': 2,
     },
     {
       'id': 2,
       'text': '3 x 3',
       'col': 'col-4',
       'cols': 9,
+      'row': 3,
     },
     {
       'id': 3,
       'text': '4 x 4',
       'col': 'col-3',
       'cols': 16,
+      'row': 4,
     },
     {
       'id': 4,
       'text': '6 x 6',
       'col': 'col-2',
       'cols': 36,
+      'row': 6,
     },
     {
       'id': 5,
       'text': '12 x 12',
       'col': 'col-1',
       'cols': 144,
+      'row': 12,
     },
   ];
 
@@ -91,7 +101,8 @@ export class HomeComponent implements OnInit {
     this.board = {
       "type": 3,
       "col": "col-3",
-      "cols": 16
+      "cols": 16,
+      'row': 4,
     };
 
     this.boardLands = [
@@ -107,8 +118,8 @@ export class HomeComponent implements OnInit {
       },
       {
         "id": 3,
-        "warriors": 2,
-        "userId": 2
+        "warriors": 0,
+        "userId": 0
       },
       {
         "id": 4,
@@ -122,8 +133,8 @@ export class HomeComponent implements OnInit {
       },
       {
         "id": 6,
-        "warriors": 1,
-        "userId": 1
+        "warriors": 0,
+        "userId": 0
       },
       {
         "id": 7,
@@ -205,6 +216,7 @@ export class HomeComponent implements OnInit {
       'type': boardType.id,
       'col': boardType.col,
       'cols': boardType.cols,
+      'row': boardType.row,
     };
 
     this.boardLands = [];
@@ -271,13 +283,15 @@ export class HomeComponent implements OnInit {
     }
 
     this.addTurn(playerIndex);
+
+    this.resetPlayerChanges();
   }
 
   // Asignar turno al jugador y añadir guerreros
   addTurn(playerIndex) {
     this.roundNumber += 1;
 
-    const warriors = Math.round(Math.random() * (this.players.length + this.board.type) + 1);
+    const warriors = Math.round(Math.random() * (this.players.length) + this.board.type);
 
     this.playerTurnIndex = playerIndex;
 
@@ -306,8 +320,21 @@ export class HomeComponent implements OnInit {
   openLandModal(content, landIndex) {
     if (this.gameStarted) {
       this.sLandIndex = landIndex;
-
       this.landModal = this.modalService.open(content, { size: 'sm', centered: true });
+    }
+  }
+
+  // Mover guerreros
+  selectTerrainToMove(landIndex) {
+    this.mLandIndex = landIndex;
+    this.moveWarriors();
+  }
+
+  canMove(terrainIndex: number) {
+    if (this.selectableTerrains.find(terrain => terrain == terrainIndex)) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -335,12 +362,62 @@ export class HomeComponent implements OnInit {
   }
 
   // Añadir guerreros a un terrreno
-  addWarriors(warriorsQuantity) {
-    this.boardLands[this.sLandIndex].warriors += warriorsQuantity;
-    this.boardLands[this.sLandIndex].userId = this.players[this.playerTurnIndex].id;
+  addWarriors(warriorsQuantity: number) {
+    this.sLand().warriors += warriorsQuantity;
+    this.sLand().userId = this.turnPlayer().id;
 
     this.turnPlayer().warriors -= warriorsQuantity;
 
+    this.closeLandModal();
+  }
+
+  // Mostrar terrenos a donde se pueden mover los guerreros
+  moveOptions(warriorsQuantity: number) {
+    this.warriorsQuantity = warriorsQuantity;
+
+    const selectableTerrains = [
+      this.sLandIndex - this.board.row,
+      this.sLandIndex - 1,
+      this.sLandIndex + 1,
+      this.sLandIndex + this.board.row
+    ];
+
+    this.selectableTerrains = [];
+
+    for (let i = 0; i < selectableTerrains.length; i++) {
+      if (selectableTerrains[i] >= 0 && selectableTerrains[i] <= this.board.cols) {
+        this.selectableTerrains.push(selectableTerrains[i]);
+      }
+    }
+
+    this.closeLandModal();
+  }
+
+  // Mover los guerreros
+  moveWarriors() {
+    this.sLand().warriors -= this.warriorsQuantity;
+
+    // Si el terreno se queda vacío quitar al usuario
+    if (this.sLand().warriors == 0) {
+      this.sLand().userId = 0;
+    }
+
+    // Si el terreno destino no tiene dueño asignamos jugador 
+    if (this.mLand().userId == 0) {
+      this.mLand().userId += this.turnPlayer().id;
+      this.mLand().warriors += this.warriorsQuantity;
+    } else {
+      console.log('Pertenece a alguien');
+    }
+
+    this.sLandIndex = null;
+    this.warriorsQuantity = 0;
+  }
+
+  resetPlayerChanges() {
+    this.sLandIndex = null;
+    this.mLandIndex = null;
+    this.warriorsQuantity = 0;
     this.closeLandModal();
   }
 
@@ -361,6 +438,10 @@ export class HomeComponent implements OnInit {
 
   sLand() {
     return this.boardLands[this.sLandIndex];
+  }
+
+  mLand() {
+    return this.boardLands[this.mLandIndex];
   }
 }
 

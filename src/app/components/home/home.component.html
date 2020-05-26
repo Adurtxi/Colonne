@@ -103,10 +103,31 @@
 
                 <!-- Terrenos -->
                 <div class="row">
-                    <ng-container *ngFor="let boardLand of boardLands; let i = index">
-                        <div [class]="['mb-4', board.col]">
+
+                    <!-- Terrenos -->
+                    <ng-container *ngIf="warriorsQuantity == 0">
+                        <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
                             <div class="card rounded-25 pointer" (click)="openLandModal(landModal, i)" [ngStyle]="boardLand.userId > 0 
                                 && {'background-color': findPlayerById(boardLand.userId).color, 'color': '#fff'}">
+                                <div class="card-body">
+                                    <h1 class="text-center mt-1">
+                                        <ng-container *ngIf="boardLand.warriors > 0">
+                                            {{boardLand.warriors}}
+                                        </ng-container>
+                                        <ng-container *ngIf="boardLand.warriors == 0">
+                                            <i class="fas fa-globe-europe"></i>
+                                        </ng-container>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- Terrenos a donde desplazarse -->
+                    <ng-container *ngIf="warriorsQuantity > 0">
+                        <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
+                            <div class="card rounded-25 pointer" (click)="selectTerrainToMove(i)" [ngStyle]="canMove(i) 
+                                && {'background-color': turnPlayer().color}">
                                 <div class="card-body">
                                     <h1 class="text-center mt-1">
                                         <ng-container *ngIf="boardLand.warriors > 0">
@@ -181,7 +202,7 @@
                     Asignar {{ turnPlayer().warriors }}
                 </button>
 
-                <button class="btn btn-secondary rounded-25" *ngIf="showButtons('move')">
+                <button class="btn btn-secondary rounded-25" *ngIf="showButtons('move')" (click)="moveOptions(sLand().warriors)">
                     Mover {{ sLand().warriors }}
                 </button>
             </div>
