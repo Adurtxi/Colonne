@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CountdownComponent } from 'ngx-countdown';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +19,7 @@ export class HomeComponent implements OnInit {
 
   sLand; // Terreno seleccionado
 
-  countdown = 10;
+  countdown = 30;
 
   boardTypes = [
     {
@@ -248,6 +247,7 @@ export class HomeComponent implements OnInit {
 
     this.timer();
   }
+
   //Seleccionar primer turno
   firstTurn() {
     const userId = Math.round(Math.random() * this.players.length + 1);
@@ -255,24 +255,9 @@ export class HomeComponent implements OnInit {
     this.addTurn(userId);
   }
 
-  async timer() {
-    for (let i = 0; i < 10; i++) {
-      await this.delay();
-      this.countdown -= 1;
-    }
-
-    this.countdown = 10;
-
-    this.changeTurn();
-  }
-
-  delay() {
-    return new Promise(resolve => setTimeout(resolve, 1000));
-  }
-
   //Cambiar turno
   changeTurn() {
-    this.timer();
+    this.countdown = 30;
 
     //Buscar jugador que posee el turno actual
     const turnPlayer = this.turnPlayer();
@@ -284,16 +269,33 @@ export class HomeComponent implements OnInit {
       userId = this.turnPlayer().id + 1;
     }
 
+    // Asignar nuevo turno
     this.addTurn(userId);
 
     turnPlayer.turn = false;
   }
 
-  addTurn(id) {
-    // Asignar turno y añadir guerrero
-    const newTurnPlayer = this.findPlayerById(id);
+  // Asignar turno y añadir guerrero
+  addTurn(userId) {
+    const newTurnPlayer = this.findPlayerById(userId);
     newTurnPlayer.turn = true;
     newTurnPlayer.warriors += 1;
+  }
+
+  // Cuenta atras
+  async timer() {
+    for (let i = 0; i < 30; i++) {
+      await this.delay();
+      this.countdown -= 1;
+    }
+
+    this.countdown = 30;
+
+    this.changeTurn();
+  }
+
+  delay() {
+    return new Promise(resolve => setTimeout(resolve, 1000));
   }
 
   openLandModal(content, land) {
