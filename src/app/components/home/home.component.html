@@ -165,5 +165,15 @@
                 <p>Propietario: {{ findPlayerById(sLand.userId).name }}</p>
                 <p>Defensores: {{ sLand.warriors }}</p>
             </ng-container>
+
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-success rounded-25" *ngIf="turnPlayer() && turnPlayer().warriors > 0" (click)="addWarriors(sLand.id)">
+                    Asignar {{ turnPlayer().warriors }}
+                </button>
+
+                <button class="btn btn-secondary rounded-25" *ngIf="turnPlayer() && sLand.userId == turnPlayer().id && sLand.warriors > 0">
+                    Mover {{ sLand.warriors }}
+                </button>
+            </div>
         </div>
     </ng-template>

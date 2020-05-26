@@ -21,6 +21,8 @@ export class HomeComponent implements OnInit {
 
   countdown = 30;
 
+  playerTurnIndex = 0;
+
   boardTypes = [
     {
       'id': 1,
@@ -194,8 +196,7 @@ export class HomeComponent implements OnInit {
           'name': '',
           'color': '#fff',
           'warriors': 0,
-          'points': 0,
-          'turn': false,
+          'points': 0
         }
       );
     }
@@ -250,36 +251,33 @@ export class HomeComponent implements OnInit {
 
   //Seleccionar primer turno
   firstTurn() {
-    const userId = Math.round(Math.random() * this.players.length + 1);
+    const playerIndex = Math.round(Math.random() * this.players.length);
 
-    this.addTurn(userId);
+    this.addTurn(playerIndex);
   }
 
   //Cambiar turno
   changeTurn() {
     this.countdown = 30;
 
-    //Buscar jugador que posee el turno actual
-    const turnPlayer = this.turnPlayer();
-
-    let userId = 1;
+    let playerIndex = 0;
 
     // Comprobar que exista el siguiente jugador
-    if (this.turnPlayer().id + 1 <= this.players.length) {
-      userId = this.turnPlayer().id + 1;
+    if (this.playerTurnIndex + 2 <= this.players.length) {
+      playerIndex = this.playerTurnIndex + 1;
     }
 
-    // Asignar nuevo turno
-    this.addTurn(userId);
+    this.playerTurnIndex = playerIndex;
 
-    turnPlayer.turn = false;
+    this.players[playerIndex].warriors += 1;
+
+    // Asignar nuevo turno
+    this.addTurn(playerIndex);
   }
 
   // Asignar turno y añadir guerrero
-  addTurn(userId) {
-    const newTurnPlayer = this.findPlayerById(userId);
-    newTurnPlayer.turn = true;
-    newTurnPlayer.warriors += 1;
+  addTurn(playerIndex) {
+
   }
 
   // Cuenta atras
@@ -292,10 +290,16 @@ export class HomeComponent implements OnInit {
     this.countdown = 30;
 
     this.changeTurn();
+
+    this.timer();
   }
 
   delay() {
     return new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
+  addWarriors(landIndex) {
+    console.log(landIndex);
   }
 
   openLandModal(content, land) {
@@ -314,7 +318,7 @@ export class HomeComponent implements OnInit {
 
   // Jugador del turno actual
   turnPlayer() {
-    return this.players.find(player => player.turn == true);
+    return this.players[this.playerTurnIndex];
   }
 }
 
