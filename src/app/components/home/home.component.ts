@@ -330,14 +330,16 @@ export class HomeComponent implements OnInit {
     this.moveWarriors();
   }
 
+  // Mostrar las tierras a las que se pueden mover los guerreros
   canMove(terrainIndex: number) {
-    if (this.selectableTerrains.find(terrain => terrain == terrainIndex)) {
+    if (this.selectableTerrains.findIndex(terrain => terrain == terrainIndex) != -1) {
       return true;
-    } else {
-      return false;
     }
+
+    return false;
   }
 
+  // Mostrar botones agregar y mover guerreros
   showButtons(button) {
     switch (button) {
       case 'add':
@@ -385,12 +387,43 @@ export class HomeComponent implements OnInit {
     this.selectableTerrains = [];
 
     for (let i = 0; i < selectableTerrains.length; i++) {
-      if (selectableTerrains[i] >= 0 && selectableTerrains[i] <= this.board.cols) {
-        this.selectableTerrains.push(selectableTerrains[i]);
+      if (selectableTerrains[i] >= 0 && selectableTerrains[i]) {
+
+        if (this.pushTerrain(i, selectableTerrains) == true) {
+          this.selectableTerrains.push(selectableTerrains[i]);
+        }
+
+        if (this.sLandIndex == this.board.row || this.sLandIndex == 1) {
+          this.selectableTerrains.push(0);
+        }
       }
     }
 
     this.closeLandModal();
+  }
+
+  pushTerrain(index, selectableTerrains) {
+    for (let e = 1; e < this.board.row + 1; e++) {
+
+      // Izquierda
+      if (this.sLandIndex == (this.board.row * e)) {
+
+        if (selectableTerrains[index] == (this.board.row * e - 1)) {
+          return false;
+        }
+      }
+
+      // Derecha
+      else if (this.sLandIndex == (this.board.row * e) - 1) {
+
+        if (selectableTerrains[index] == (this.board.row * e)) {
+          return false;
+        }
+
+      }
+    }
+
+    return true;
   }
 
   // Mover los guerreros
