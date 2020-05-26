@@ -17,13 +17,13 @@ export class HomeComponent implements OnInit {
   board; // Tablero
   boardLands; // Tierras del tablero
 
-  sLand; // Terreno seleccionado
+  sLandIndex; //Index del terreno seleccionado
 
-  countdown = 30;
+  countdown = 30; // Cuenta atras
 
-  playerTurnIndex = 0;
+  playerTurnIndex = 0; // Index del usuario del turno
 
-  roundNumber = 0;
+  roundNumber = 0; // Número de ronda
 
   boardTypes = [
     {
@@ -71,7 +71,6 @@ export class HomeComponent implements OnInit {
         "color": "#00ff00",
         "warriors": 0,
         "points": 0,
-        'turn': false,
       },
       {
         "id": 2,
@@ -79,7 +78,6 @@ export class HomeComponent implements OnInit {
         "color": "#0000ff",
         "warriors": 0,
         "points": 0,
-        'turn': false,
       },
       {
         "id": 3,
@@ -87,7 +85,6 @@ export class HomeComponent implements OnInit {
         "color": "#ff0000",
         "warriors": 0,
         "points": 0,
-        'turn': false,
       }
     ];
 
@@ -241,10 +238,12 @@ export class HomeComponent implements OnInit {
 
   /* JUEGO */
 
+  // Mostrar tablero
   start() {
     this.game = true;
   }
 
+  // Empezar los turnos
   startGame() {
     this.gameStarted = true;
 
@@ -274,6 +273,7 @@ export class HomeComponent implements OnInit {
     this.addTurn(playerIndex);
   }
 
+  // Asignar turno al jugador y añadir guerreros
   addTurn(playerIndex) {
     this.roundNumber += 1;
 
@@ -302,20 +302,54 @@ export class HomeComponent implements OnInit {
     return new Promise(resolve => setTimeout(resolve, 1000));
   }
 
-  addWarriors(landIndex) {
-    console.log(landIndex);
+  // Seleccionar terrero y abrir modal
+  openLandModal(content, landIndex) {
+    if (this.gameStarted) {
+      this.sLandIndex = landIndex;
+
+      this.landModal = this.modalService.open(content, { size: 'sm', centered: true });
+    }
   }
 
-  openLandModal(content, land) {
-    this.sLand = land;
+  showButtons(button) {
+    switch (button) {
+      case 'add':
 
-    this.landModal = this.modalService.open(content, { size: 'sm', centered: true });
+        if (this.turnPlayer() && this.turnPlayer().warriors > 0) {
+          if (this.sLand().userId == this.turnPlayer().id || this.sLand().userId == 0) {
+            return true;
+          }
+          return false;
+        }
+
+        return false;
+
+      case 'move':
+
+        if (this.turnPlayer() && this.sLand().userId == this.turnPlayer().id && this.sLand().warriors > 0) {
+          return true;
+        }
+
+        return false;
+    }
   }
 
+  // Añadir guerreros a un terrreno
+  addWarriors(warriorsQuantity) {
+    this.boardLands[this.sLandIndex].warriors += warriorsQuantity;
+    this.boardLands[this.sLandIndex].userId = this.players[this.playerTurnIndex].id;
+
+    this.turnPlayer().warriors -= warriorsQuantity;
+
+    this.closeLandModal();
+  }
+
+  // Cerrar terreno
   closeLandModal() {
     this.landModal.close();
   }
 
+  // Buscar jugador por ID
   findPlayerById(id: number) {
     return this.players.find(player => player.id == id);
   }
@@ -323,6 +357,10 @@ export class HomeComponent implements OnInit {
   // Jugador del turno actual
   turnPlayer() {
     return this.players[this.playerTurnIndex];
+  }
+
+  sLand() {
+    return this.boardLands[this.sLandIndex];
   }
 }
 

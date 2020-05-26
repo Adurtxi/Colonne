@@ -79,7 +79,7 @@
 
                     <div class="d-flex justify-content-center mb-4">
                         <div class="col-lg-6 col-sm-12">
-                            <button class="btn btn-success btn-block btn-lg rounded-25" [disabled]="incompletePlayers() == true" (click)="start()">
+                            <button class="btn btn-success btn-block btn-lg rounded-25" [disabled]="incompletePlayers()" (click)="start()">
                                 <i class="fas fa-gamepad mr-2"></i> ¡Empezar a jugar!
                             </button>
                         </div>
@@ -88,7 +88,11 @@
             </div>
         </div>
 
-        <ng-container *ngIf="game == true">
+        <!-- ******* -->
+        <!-- TABLERO -->
+        <!-- ******* -->
+
+        <ng-container *ngIf="game">
             <div class="col-lg-8 col-md-12 col-sm-12">
 
                 <div class="row mb-4">
@@ -97,10 +101,11 @@
                     </div>
                 </div>
 
+                <!-- Terrenos -->
                 <div class="row">
-                    <ng-container *ngFor="let boardLand of boardLands">
+                    <ng-container *ngFor="let boardLand of boardLands; let i = index">
                         <div [class]="['mb-4', board.col]">
-                            <div class="card rounded-25 pointer" (click)="openLandModal(landModal, boardLand)">
+                            <div class="card rounded-25 pointer" (click)="openLandModal(landModal, i)">
                                 <div class="card-body">
                                     <h1 class="text-center mt-1">
                                         <ng-container *ngIf="boardLand.warriors > 0">
@@ -117,14 +122,15 @@
                 </div>
             </div>
 
+            <!-- Jugadores -->
             <div class="col-lg-2 col-md-6 col-sm-6">
                 <div class="d-flex justify-content-center mb-4">
                     {{ countdown }}
                 </div>
 
                 <div class="card rounded-25 mb-4" *ngFor="let player of players" [ngClass]=" {
-                    'bg-light': gameStarted == true && player.id != turnPlayer().id,
-                    'bg-dark text-light': gameStarted == true && player.id == turnPlayer().id 
+                    'bg-light': gameStarted && player.id != turnPlayer().id,
+                    'bg-dark text-light': gameStarted && player.id == turnPlayer().id 
                 }">
                     <div class="card-body">
                         <p>
@@ -144,10 +150,10 @@
                     </div>
                 </div>
 
-                <button class="btn btn-success btn-block rounded-25" (click)="startGame()" *ngIf="gameStarted == false">
+                <button class="btn btn-success btn-block rounded-25" (click)="startGame()" *ngIf="!gameStarted">
                     Empezar
                 </button>
-                <button class="btn btn-success btn-block rounded-25" (click)="changeTurn()" *ngIf="gameStarted == true">
+                <button class="btn btn-success btn-block rounded-25" (click)="changeTurn()" *ngIf="gameStarted">
                     Siguiente turno
                 </button>
             </div>
@@ -157,24 +163,24 @@
 
     <ng-template #landModal let-close="close">
         <div class="modal-header">
-            <h5 class="modal-title">Tierra {{ sLand.id }}</h5>
+            <h5 class="modal-title">Tierra {{ sLand().id }}</h5>
             <button type="button" class="close" (click)="closeLandModal()">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
         <div class="modal-body">
-            <ng-container *ngIf="sLand.userId > 0">
-                <p>Propietario: {{ findPlayerById(sLand.userId).name }}</p>
-                <p>Defensores: {{ sLand.warriors }}</p>
+            <ng-container *ngIf="sLand().userId > 0">
+                <p>Propietario: {{ findPlayerById(sLand().userId).name }}</p>
+                <p>Defensores: {{ sLand().warriors }}</p>
             </ng-container>
 
             <div class="d-flex justify-content-between">
-                <button class="btn btn-success rounded-25" *ngIf="turnPlayer() && turnPlayer().warriors > 0" (click)="addWarriors(sLand.id)">
+                <button class="btn btn-success rounded-25" *ngIf="showButtons('add')" (click)="addWarriors(turnPlayer().warriors)">
                     Asignar {{ turnPlayer().warriors }}
                 </button>
 
-                <button class="btn btn-secondary rounded-25" *ngIf="turnPlayer() && sLand.userId == turnPlayer().id && sLand.warriors > 0">
-                    Mover {{ sLand.warriors }}
+                <button class="btn btn-secondary rounded-25" *ngIf="showButtons('move')">
+                    Mover {{ sLand().warriors }}
                 </button>
             </div>
         </div>
