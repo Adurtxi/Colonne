@@ -8,7 +8,7 @@
                     <h1 class="text-center">Tablero</h1>
                     <div class="row mt-4 justify-content-center">
                         <ng-container *ngFor="let boardType of boardTypes">
-                            <div class="col-2">
+                            <div class="col-3">
                                 <div class="card rounded-25 bg-dark pointer" (click)="selectBoard(boardType)" [ngClass]=" {
                                         'bg-dark': board.type !=  boardType.id || board == 0,
                                         'bg-success': board.type == boardType.id
@@ -28,9 +28,9 @@
             <div class="card rounded-25 mt-4">
                 <div class="card-body">
                     <h1 class="text-center">Cantidad de jugadores</h1>
-                    <div class="row mt-4">
-                        <ng-container *ngFor="let playersQuantity of [2,3,4,5]">
-                            <div class="col-3">
+                    <div class="row mt-4 justify-content-center">
+                        <ng-container *ngFor="let playersQuantity of [2,3,4]">
+                            <div class="col-4">
                                 <div class="card rounded-25 pointer" (click)="selectPlayersQuantity(playersQuantity)" [ngClass]=" {
                                         'bg-dark': players.length != playersQuantity || players.length == 0,
                                         'bg-success': players.length == playersQuantity
@@ -109,15 +109,15 @@
                         <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
                             <div class="card rounded-25 pointer" (click)="openLandModal(landModal, i)" [ngStyle]="boardLand.userId > 0 
                                 && {'background-color': findPlayerById(boardLand.userId).color, 'color': '#fff'}">
+
                                 <div class="card-body">
-                                    <h1 class="text-center mt-1">
-                                        <ng-container *ngIf="boardLand.warriors > 0">
-                                            {{boardLand.warriors}}
-                                        </ng-container>
-                                        <ng-container *ngIf="boardLand.warriors == 0">
-                                            <i class="fas fa-globe-europe"></i>
-                                        </ng-container>
-                                    </h1>
+                                    <ng-container *ngIf="boardLand.warriors > 0">
+                                        <img src="assets/img/helmet.png" style="width: 50px;" alt="Guerrero">
+                                        <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
+                                    </ng-container>
+                                    <ng-container *ngIf="boardLand.warriors == 0">
+                                        <img src="assets/img/land.png" style="width: 50px;" alt="Terreno">
+                                    </ng-container>
                                 </div>
                             </div>
                         </div>
@@ -202,7 +202,7 @@
                     Asignar {{ turnPlayer().warriors }}
                 </button>
 
-                <button class="btn btn-secondary rounded-25" *ngIf="showButtons('move')" (click)="moveOptions(sLand().warriors)">
+                <button class="btn btn-secondary rounded-25" *ngIf="showButtons('move')" (click)="showMoveOptions(sLand().warriors)">
                     Mover {{ sLand().warriors }}
                 </button>
             </div>

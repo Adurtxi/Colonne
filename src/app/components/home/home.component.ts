@@ -59,13 +59,6 @@ export class HomeComponent implements OnInit {
       'cols': 36,
       'row': 6,
     },
-    {
-      'id': 5,
-      'text': '12 x 12',
-      'col': 'col-1',
-      'cols': 144,
-      'row': 12,
-    },
   ];
 
   constructor(
@@ -191,7 +184,14 @@ export class HomeComponent implements OnInit {
     this.game = true;
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    console.log(
+      0,
+      this.board.row - 1,
+      (this.board.row * this.board.row) - this.board.row,
+      (this.board.row * this.board.row) - 1,
+    );
+  }
 
   // Seleccionar cantidad de jugadores
   selectPlayersQuantity(playersQuantity: number) {
@@ -264,6 +264,10 @@ export class HomeComponent implements OnInit {
     this.timer();
   }
 
+  /****************************************************************************************/
+  /*                                      TURNOS                                          */
+  /****************************************************************************************/
+
   //Seleccionar primer turno
   firstTurn() {
     const playerIndex = Math.round(Math.random() * this.players.length);
@@ -303,11 +307,12 @@ export class HomeComponent implements OnInit {
     for (let i = 0; i < 30; i++) {
       await this.delay();
       this.countdown -= 1;
+
+      if (this.countdown == 0) {
+        this.changeTurn();
+        this.countdown = 30;
+      }
     }
-
-    this.countdown = 30;
-
-    this.changeTurn();
 
     this.timer();
   }
@@ -315,6 +320,21 @@ export class HomeComponent implements OnInit {
   delay() {
     return new Promise(resolve => setTimeout(resolve, 1000));
   }
+
+  // Resetear los valores
+  resetPlayerChanges() {
+    this.sLandIndex = null;
+    this.mLandIndex = null;
+    this.warriorsQuantity = 0;
+
+    if (this.landModal) {
+      this.closeLandModal();
+    }
+  }
+
+  /****************************************************************************************/
+  /*                                      TERRENOS                                        */
+  /****************************************************************************************/
 
   // Seleccionar terrero y abrir modal
   openLandModal(content, landIndex) {
@@ -335,7 +355,6 @@ export class HomeComponent implements OnInit {
     if (this.selectableTerrains.findIndex(terrain => terrain == terrainIndex) != -1) {
       return true;
     }
-
     return false;
   }
 
@@ -363,18 +382,8 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  // Añadir guerreros a un terrreno
-  addWarriors(warriorsQuantity: number) {
-    this.sLand().warriors += warriorsQuantity;
-    this.sLand().userId = this.turnPlayer().id;
-
-    this.turnPlayer().warriors -= warriorsQuantity;
-
-    this.closeLandModal();
-  }
-
   // Mostrar terrenos a donde se pueden mover los guerreros
-  moveOptions(warriorsQuantity: number) {
+  showMoveOptions(warriorsQuantity: number) {
     this.warriorsQuantity = warriorsQuantity;
 
     const selectableTerrains = [
@@ -419,6 +428,22 @@ export class HomeComponent implements OnInit {
     return true;
   }
 
+  /*******************************************************************************************/
+  /*                                      GUERREROS                                          */
+  /*******************************************************************************************/
+
+  // Añadir guerreros a un terrreno
+  addWarriors(warriorsQuantity: number) {
+    this.sLand().warriors += warriorsQuantity;
+    this.sLand().userId = this.turnPlayer().id;
+
+    this.turnPlayer().warriors -= warriorsQuantity;
+
+    this.closeLandModal();
+
+    this.changeTurn();
+  }
+
   // Mover los guerreros
   moveWarriors() {
     if (this.selectableTerrains.findIndex(terrain => terrain == this.mLandIndex) != -1) {
@@ -444,19 +469,13 @@ export class HomeComponent implements OnInit {
         if (this.sLand().warriors == 0) {
           this.sLand().userId = 0;
         }
+
+        this.changeTurn();
       }
     }
 
     this.sLandIndex = null;
     this.warriorsQuantity = 0;
-  }
-
-  // Resetear los valores
-  resetPlayerChanges() {
-    this.sLandIndex = null;
-    this.mLandIndex = null;
-    this.warriorsQuantity = 0;
-    this.closeLandModal();
   }
 
   // Cerrar terreno
