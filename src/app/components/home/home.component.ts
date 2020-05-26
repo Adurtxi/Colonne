@@ -395,25 +395,37 @@ export class HomeComponent implements OnInit {
 
   // Mover los guerreros
   moveWarriors() {
-    this.sLand().warriors -= this.warriorsQuantity;
+    if (this.selectableTerrains.findIndex(terrain => terrain == this.mLandIndex) != -1) {
+      let moved = false;
 
-    // Si el terreno se queda vacío quitar al usuario
-    if (this.sLand().warriors == 0) {
-      this.sLand().userId = 0;
-    }
+      // Si el terreno destino no tiene dueño asignamos jugador 
+      if (this.mLand().userId == 0) {
+        this.mLand().userId += this.turnPlayer().id;
+        this.mLand().warriors += this.warriorsQuantity;
 
-    // Si el terreno destino no tiene dueño asignamos jugador 
-    if (this.mLand().userId == 0) {
-      this.mLand().userId += this.turnPlayer().id;
-      this.mLand().warriors += this.warriorsQuantity;
-    } else {
-      console.log('Pertenece a alguien');
+        moved = true;
+      } else {
+        console.log('Pertenece a alguien');
+
+        moved = false;
+      }
+
+      // En caso de que se hayan movido comprobar si el terreno origen se ha quedado sin guerreros
+      if (moved === true) {
+        this.sLand().warriors -= this.warriorsQuantity;
+
+        // Si el terreno se queda vacío quitar al usuario
+        if (this.sLand().warriors == 0) {
+          this.sLand().userId = 0;
+        }
+      }
     }
 
     this.sLandIndex = null;
     this.warriorsQuantity = 0;
   }
 
+  // Resetear los valores
   resetPlayerChanges() {
     this.sLandIndex = null;
     this.mLandIndex = null;
