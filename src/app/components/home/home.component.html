@@ -79,7 +79,7 @@
 
                     <div class="d-flex justify-content-center mb-4">
                         <div class="col-lg-6 col-sm-12">
-                            <button class="btn btn-success btn-block btn-lg rounded-25" [disabled]="incompletePlayers() == true" (click)="startGame()">
+                            <button class="btn btn-success btn-block btn-lg rounded-25" [disabled]="incompletePlayers() == true" (click)="start()">
                                 <i class="fas fa-gamepad mr-2"></i> ¡Empezar a jugar!
                             </button>
                         </div>
@@ -89,10 +89,12 @@
         </div>
 
         <ng-container *ngIf="game == true">
-            <div class="col-lg-8">
-                <div class="alert alert-secondary rounded-25 mb-4" role="alert">
-                    <span *ngIf="gameStarted == false">Empieza a jugar</span>
-                    <span *ngIf="gameStarted == true">Turno de {{ turnPlayer().name }}</span>
+            <div class="col-lg-8 col-md-12 col-sm-12">
+
+                <div class="row mb-4">
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        Ronda {{ roundNumber }}
+                    </div>
                 </div>
 
                 <div class="row">
@@ -115,7 +117,7 @@
                 </div>
             </div>
 
-            <div class="col-2">
+            <div class="col-lg-2 col-md-6 col-sm-6">
                 <div class="d-flex justify-content-center mb-4">
                     {{ countdown }}
                 </div>

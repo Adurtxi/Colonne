@@ -23,36 +23,38 @@ export class HomeComponent implements OnInit {
 
   playerTurnIndex = 0;
 
+  roundNumber = 0;
+
   boardTypes = [
     {
       'id': 1,
-      'text': '2*2',
+      'text': '2 x 2',
       'col': 'col-6',
       'cols': 4,
     },
     {
       'id': 2,
-      'text': '3*3',
+      'text': '3 x 3',
       'col': 'col-4',
       'cols': 9,
     },
     {
       'id': 3,
-      'text': '4*4',
+      'text': '4 x 4',
       'col': 'col-3',
       'cols': 16,
     },
     {
       'id': 4,
-      'text': '6*6',
+      'text': '6 x 6',
       'col': 'col-2',
       'cols': 36,
     },
     {
       'id': 5,
-      'text': '8*8',
+      'text': '12 x 12',
       'col': 'col-1',
-      'cols': 64,
+      'cols': 144,
     },
   ];
 
@@ -178,12 +180,10 @@ export class HomeComponent implements OnInit {
       }
     ];
 
-
-  }
-
-  ngOnInit(): void {
     this.game = true;
   }
+
+  ngOnInit(): void { }
 
   // Seleccionar cantidad de jugadores
   selectPlayersQuantity(playersQuantity: number) {
@@ -241,6 +241,10 @@ export class HomeComponent implements OnInit {
 
   /* JUEGO */
 
+  start() {
+    this.game = true;
+  }
+
   startGame() {
     this.gameStarted = true;
 
@@ -267,17 +271,17 @@ export class HomeComponent implements OnInit {
       playerIndex = this.playerTurnIndex + 1;
     }
 
-    this.playerTurnIndex = playerIndex;
-
-    this.players[playerIndex].warriors += 1;
-
-    // Asignar nuevo turno
     this.addTurn(playerIndex);
   }
 
-  // Asignar turno y añadir guerrero
   addTurn(playerIndex) {
+    this.roundNumber += 1;
 
+    const warriors = Math.round(Math.random() * (this.players.length + this.board.type) + 1);
+
+    this.playerTurnIndex = playerIndex;
+
+    this.players[playerIndex].warriors += warriors;
   }
 
   // Cuenta atras
