@@ -27,12 +27,15 @@ export class HomeComponent implements OnInit {
 
   roundNumber = 0; // Número de ronda
 
-  warriorsQuantity = 0; // Cantidad de guerreros a mover
+  warriorsQuantity = 1; // Cantidad de guerreros a mover
+  addWarriorsQuantity = 1; // Cantidad de guerreros a añadir
 
   selectableTerrains = [];
 
   attackWarriors; // Atacantes
   attackResult; // Resultado del ataque
+
+  move = false;
 
   boardTypes = [
     {
@@ -210,7 +213,9 @@ export class HomeComponent implements OnInit {
   resetPlayerChanges() {
     this.sLandIndex = null;
     this.mLandIndex = null;
-    this.warriorsQuantity = 0;
+
+    this.warriorsQuantity = 1;
+    this.addWarriorsQuantity = 1;
 
     if (this.landModal) {
       this.closeLandModal();
@@ -225,7 +230,16 @@ export class HomeComponent implements OnInit {
   openLandModal(content, landIndex) {
     if (this.gameStarted) {
       this.sLandIndex = landIndex;
-      this.landModal = this.modalService.open(content, { size: 'sm', centered: true });
+
+      if (this.sLand().userId == this.turnPlayer().id || this.sLand().userId == 0) {
+
+        if (this.sLand().warriors > 0) {
+          this.landModal = this.modalService.open(content, { centered: true });
+        } else {
+          this.landModal = this.modalService.open(content, { size: 'sm', centered: true });
+        }
+
+      }
     }
   }
 
@@ -273,32 +287,34 @@ export class HomeComponent implements OnInit {
   }
 
   // Mostrar terrenos a donde se pueden mover los guerreros
-  showMoveOptions(warriorsQuantity: number) {
-    this.warriorsQuantity = warriorsQuantity;
+  showMoveOptions() {
+    if (this.warriorsQuantity <= this.sLand().warriors) {
+      this.move = true;
 
-    const selectableTerrains = [
-      this.sLandIndex - this.board.row,
-      this.sLandIndex - 1,
-      this.sLandIndex + 1,
-      this.sLandIndex + this.board.row
-    ];
+      const selectableTerrains = [
+        this.sLandIndex - this.board.row,
+        this.sLandIndex - 1,
+        this.sLandIndex + 1,
+        this.sLandIndex + this.board.row
+      ];
 
-    this.selectableTerrains = [];
+      this.selectableTerrains = [];
 
-    for (let i = 0; i < selectableTerrains.length; i++) {
-      if (selectableTerrains[i] >= 0 && selectableTerrains[i]) {
+      for (let i = 0; i < selectableTerrains.length; i++) {
+        if (selectableTerrains[i] >= 0 && selectableTerrains[i]) {
 
-        if (this.pushTerrain(i, selectableTerrains) == true) {
-          this.selectableTerrains.push(selectableTerrains[i]);
-        }
+          if (this.pushTerrain(i, selectableTerrains) == true) {
+            this.selectableTerrains.push(selectableTerrains[i]);
+          }
 
-        if (this.sLandIndex == this.board.row || this.sLandIndex == 1) {
-          this.selectableTerrains.push(0);
+          if (this.sLandIndex == this.board.row || this.sLandIndex == 1) {
+            this.selectableTerrains.push(0);
+          }
         }
       }
-    }
 
-    this.closeLandModal();
+      this.closeLandModal();
+    }
   }
 
   // Mostrar correctamente las opciones de movimiento
@@ -323,15 +339,17 @@ export class HomeComponent implements OnInit {
   /*******************************************************************************************/
 
   // Añadir guerreros a un terrreno
-  addWarriors(warriorsQuantity: number) {
-    this.sLand().warriors += warriorsQuantity;
-    this.sLand().userId = this.turnPlayer().id;
+  addWarriors() {
+    if (this.addWarriorsQuantity <= this.turnPlayer().warriors) {
+      this.sLand().warriors += this.addWarriorsQuantity;
+      this.sLand().userId = this.turnPlayer().id;
 
-    this.turnPlayer().warriors -= warriorsQuantity;
+      this.turnPlayer().warriors -= this.addWarriorsQuantity;
 
-    this.closeLandModal();
+      this.closeLandModal();
 
-    this.changeTurn();
+      this.changeTurn();
+    }
   }
 
   // Mover los guerreros
@@ -367,8 +385,7 @@ export class HomeComponent implements OnInit {
       this.changeTurn();
     }
 
-    this.sLandIndex = null;
-    this.warriorsQuantity = 0;
+    this.move = false;
   }
 
   attack(sWarriors: number, mWarriors: number) {
@@ -404,16 +421,16 @@ export class HomeComponent implements OnInit {
 
     const attack = sWarriors2 - mWarriors;
 
-    let result;
+    let win;
 
     // Gana
     if (sWarriors2 > mWarriors) {
-      result = 1;
+      win = true;
       mWarriors = 0;
       sWarriors = attack;
       // Pierde
     } else if (sWarriors2 < mWarriors) {
-      result = 0;
+      win = false;
       mWarriors -= Math.round(sWarriors2);
       sWarriors = 0;
     }
@@ -421,24 +438,20 @@ export class HomeComponent implements OnInit {
     // Empate
     else {
       if (number == 4 || number == 5) {
-        result = 1;
+        win = true;
         sWarriors = 1;
         mWarriors = 0;
       } else if (number == 6) {
-        result = 0;
+        win = false;
         sWarriors = 0;
         mWarriors = 1;
       }
     }
 
-    if (result == 1) {
-      result = 'Has ganado';
-    } else {
-      result = 'Has perdido';
-    }
-
     const attackResult = {
-      'result': result,
+      'attacker': this.turnPlayer().name,
+      'defender': this.findPlayerById(this.mLand().userId).name,
+      'win': win,
       'sWarriors': Math.round(sWarriors),
       'mWarriors': Math.round(mWarriors),
     };

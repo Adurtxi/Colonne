@@ -105,10 +105,10 @@
                 <div class="row">
 
                     <!-- Terrenos -->
-                    <ng-container *ngIf="warriorsQuantity == 0">
+                    <ng-container *ngIf="!move">
                         <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
-                            <div class="card rounded-25 pointer" (click)="openLandModal(landModal, i)" [ngStyle]="boardLand.userId > 0 
-                                && {'background-color': findPlayerById(boardLand.userId).color, 'color': '#fff'}">
+                            <div class="card rounded-25" (click)="openLandModal(landModal, i)" [ngStyle]="boardLand.userId > 0 
+                                && {'background-color': findPlayerById(boardLand.userId).color, 'color': '#fff'}" [class.pointer]="boardLand.userId == turnPlayer().id || boardLand.userId == 0">
 
                                 <div class="card-body">
                                     <ng-container *ngIf="boardLand.warriors > 0">
@@ -124,10 +124,10 @@
                     </ng-container>
 
                     <!-- Terrenos a donde desplazarse -->
-                    <ng-container *ngIf="warriorsQuantity > 0">
+                    <ng-container *ngIf="move">
                         <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
-                            <div class="card rounded-25 pointer" (click)="selectTerrainToMove(attackModal, i)" [ngStyle]="canMove(i) 
-                                && {'background-color': turnPlayer().color, 'color': '#fff'}">
+                            <div class="card rounded-25" (click)="selectTerrainToMove(attackModal, i)" [ngStyle]="canMove(i) 
+                                && {'background-color': turnPlayer().color, 'color': '#fff'}" [class.pointer]="canMove(i)">
                                 <div class="card-body">
                                     <h1 class="text-center mt-1">
                                         <ng-container *ngIf="canMove(i) && boardLand.userId != 0 && boardLand.userId != turnPlayer().id">
@@ -195,47 +195,82 @@
 
         </ng-container>
     </div>
+</div>
 
-    <ng-template #landModal let-close="close">
-        <div class="modal-header">
-            <h5 class="modal-title">Tierra {{ sLand().id }}</h5>
-            <button type="button" class="close" (click)="closeLandModal()">
-                <span aria-hidden="true">&times;</span>
+<ng-template #landModal let-close="close">
+    <div class="modal-header">
+        <h5 class="modal-title">Tierra {{ sLand().id }}</h5>
+        <button type="button" class="close" (click)="closeLandModal()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <ng-container *ngIf="sLand().userId > 0">
+            <p>Propietario: {{ findPlayerById(sLand().userId).name }}</p>
+            <p>Defensores: {{ sLand().warriors }}</p>
+        </ng-container>
+
+        <div class="mt-4" *ngIf="showButtons('add') && sLand().warriors == 0">
+            <input name="warriors" type="number" [(ngModel)]="addWarriorsQuantity" min="1" max="{{this.turnPlayer().warriors}}" class="form-control rounded-25" placeholder="Añadir" (keyup.enter)="addWarriors()">
+
+            <button class="btn btn-success rounded-25 btn-block mt-2" (click)="addWarriors()">
+                Asignar {{ addWarriorsQuantity }}
             </button>
         </div>
-        <div class="modal-body">
-            <ng-container *ngIf="sLand().userId > 0">
-                <p>Propietario: {{ findPlayerById(sLand().userId).name }}</p>
-                <p>Defensores: {{ sLand().warriors }}</p>
-            </ng-container>
 
-            <div class="d-flex justify-content-between">
-                <button class="btn btn-success rounded-25" *ngIf="showButtons('add')" (click)="addWarriors(turnPlayer().warriors)">
-                    Asignar {{ turnPlayer().warriors }}
-                </button>
+        <div class="row justify-content-center" *ngIf="sLand().warriors > 0">
+            <div class="col-lg-6">
+                <div class="mt-4" *ngIf="showButtons('add')">
+                    <input name="warriors" type="number" [(ngModel)]="addWarriorsQuantity" min="1" max="{{this.turnPlayer().warriors}}" class="form-control rounded-25" placeholder="Añadir" (keyup.enter)="addWarriors()">
 
-                <button class="btn btn-secondary rounded-25" *ngIf="showButtons('move')" (click)="showMoveOptions(sLand().warriors)">
-                    Mover {{ sLand().warriors }}
-                </button>
+                    <button class="btn btn-success rounded-25 btn-block mt-2" (click)="addWarriors()">
+                        Asignar {{ addWarriorsQuantity }}
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="mt-4" *ngIf="showButtons('move')">
+                    <input name="warriors" type="number" [(ngModel)]="warriorsQuantity" min="1" max="{{this.sLand().warriors}}" class="form-control rounded-25" placeholder="Mover" (keyup.enter)="showMoveOptions()">
+
+                    <button class="btn btn-secondary rounded-25 btn-block mt-2" (click)="showMoveOptions()">
+                        Mover {{ warriorsQuantity }}
+                    </button>
+                </div>
             </div>
         </div>
-    </ng-template>
+    </div>
+</ng-template>
 
-    <!-- Resultado -->
-    <ng-template #attackModal let-close="close">
-        <div class="modal-header">
-            <h5 class="modal-title">Resultado ataque</h5>
-            <button type="button" class="close" (click)="closeAttackModal()">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <h1>{{ attackResult.result }}</h1>
-
-            <h1>Ataque</h1>
-            <p>{{ attackWarriors.sWarriors }} | {{ attackWarriors.mWarriors }}</p>
-
-            <h1>Tropas vivas</h1>
-            <p>{{ attackResult.sWarriors }} | {{ attackResult.mWarriors }}</p>
-        </div>
-    </ng-template>
+<!-- Resultado -->
+<ng-template #attackModal let-close="close">
+    <div class="modal-header">
+        <h5 class="modal-title text-success" *ngIf="attackResult.win">Has ganado</h5>
+        <h5 class="modal-title text-danger" *ngIf="!attackResult.win">Has perdido</h5>
+        <button type="button" class="close" (click)="closeAttackModal()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Tropas</th>
+                    <th>Tropas</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ attackResult.attacker }}</td>
+                    <td>{{ attackWarriors.sWarriors }}</td>
+                    <td>{{ attackResult.sWarriors }}</td>
+                </tr>
+                <tr>
+                    <td>{{ attackResult.defender }}</td>
+                    <td>{{ attackWarriors.mWarriors }}</td>
+                    <td>{{ attackResult.mWarriors }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</ng-template>
