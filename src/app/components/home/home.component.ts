@@ -9,6 +9,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 export class HomeComponent implements OnInit {
   landModal; //Modal acciones terreno
+  attackModal; //Modal del resultado del ataque
 
   game = false;
   gameStarted = false;
@@ -29,6 +30,9 @@ export class HomeComponent implements OnInit {
   warriorsQuantity = 0; // Cantidad de guerreros a mover
 
   selectableTerrains = [];
+
+  attackWarriors; // Atacantes
+  attackResult; // Resultado del ataque
 
   boardTypes = [
     {
@@ -66,132 +70,9 @@ export class HomeComponent implements OnInit {
   ) {
     this.players = [];
     this.board = 0;
-
-    this.players = [
-      {
-        "id": 1,
-        "name": "Adur",
-        "color": "#68c20e",
-        "warriors": 0,
-        "points": 0,
-      },
-      {
-        "id": 2,
-        "name": "Jon",
-        "color": "#d5d81f",
-        "warriors": 0,
-        "points": 0,
-      },
-      {
-        "id": 3,
-        "name": "Noe",
-        "color": "#e81010",
-        "warriors": 0,
-        "points": 0,
-      }
-    ];
-
-    this.board = {
-      "type": 3,
-      "col": "col-3",
-      "cols": 16,
-      'row': 4,
-    };
-
-    this.boardLands = [
-      {
-        "id": 1,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 2,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 3,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 4,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 5,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 6,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 7,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 8,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 9,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 10,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 11,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 12,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 13,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 14,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 15,
-        "warriors": 0,
-        "userId": 0
-      },
-      {
-        "id": 16,
-        "warriors": 0,
-        "userId": 0
-      }
-    ];
-
-    this.game = true;
   }
 
-  ngOnInit(): void {
-    console.log(
-      0,
-      this.board.row - 1,
-      (this.board.row * this.board.row) - this.board.row,
-      (this.board.row * this.board.row) - 1,
-    );
-  }
+  ngOnInit(): void { }
 
   // Seleccionar cantidad de jugadores
   selectPlayersQuantity(playersQuantity: number) {
@@ -295,7 +176,11 @@ export class HomeComponent implements OnInit {
   addTurn(playerIndex) {
     this.roundNumber += 1;
 
-    const warriors = Math.round(Math.random() * (this.players.length) + this.board.type);
+    let warriors = Math.round((Math.random() * this.players.length) + (this.roundNumber / 10));
+
+    if (warriors == 0) {
+      warriors = 1;
+    }
 
     this.playerTurnIndex = playerIndex;
 
@@ -344,10 +229,15 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  // Cerrar terreno
+  closeLandModal() {
+    this.landModal.close();
+  }
+
   // Mover guerreros
-  selectTerrainToMove(landIndex) {
+  selectTerrainToMove(attackModal, landIndex) {
     this.mLandIndex = landIndex;
-    this.moveWarriors();
+    this.moveWarriors(attackModal);
   }
 
   // Mostrar las tierras a las que se pueden mover los guerreros
@@ -445,43 +335,132 @@ export class HomeComponent implements OnInit {
   }
 
   // Mover los guerreros
-  moveWarriors() {
+  moveWarriors(attackModal) {
     if (this.selectableTerrains.findIndex(terrain => terrain == this.mLandIndex) != -1) {
-      let moved = false;
 
       // Si el terreno destino no tiene dueño asignamos jugador 
       if (this.mLand().userId == 0 || this.mLand().userId == this.turnPlayer().id) {
         this.mLand().userId = this.turnPlayer().id;
         this.mLand().warriors += this.warriorsQuantity;
 
-        moved = true;
       } else {
-        console.log('Pertenece a alguien');
+        const result = this.attack(this.warriorsQuantity, this.mLand().warriors);
 
-        moved = false;
-      }
+        this.mLand().warriors = result['mWarriors'];
 
-      // En caso de que se hayan movido comprobar si el terreno origen se ha quedado sin guerreros
-      if (moved === true) {
-        this.sLand().warriors -= this.warriorsQuantity;
-
-        // Si el terreno se queda vacío quitar al usuario
-        if (this.sLand().warriors == 0) {
-          this.sLand().userId = 0;
+        if (this.mLand().warriors == 0) {
+          this.mLand().userId = this.turnPlayer().id;
+          this.mLand().warriors = result['sWarriors'];
         }
 
-        this.changeTurn();
+        // Mostrar resultado ataque
+        this.openAttackModal(attackModal);
       }
+
+      this.sLand().warriors -= this.warriorsQuantity;
+
+      // Si el terreno se queda vacío quitar al usuario
+      if (this.sLand().warriors == 0) {
+        this.sLand().userId = 0;
+      }
+
+      this.changeTurn();
     }
 
     this.sLandIndex = null;
     this.warriorsQuantity = 0;
   }
 
-  // Cerrar terreno
-  closeLandModal() {
-    this.landModal.close();
+  attack(sWarriors: number, mWarriors: number) {
+    this.attackWarriors = {
+      'sWarriors': sWarriors,
+      'mWarriors': mWarriors
+    }
+
+    const number = Math.floor(Math.random() * 10) + 1;
+
+    let sWarriors2 = sWarriors;
+
+    switch (number) {
+      case 1:
+        sWarriors2 /= 1.5;
+        break;
+      case 2:
+        sWarriors2 /= 1.3;
+        break;
+      case 3:
+        sWarriors2 /= 1.1;
+        break;
+      case 8:
+        sWarriors2 *= 1.1;
+        break;
+      case 9:
+        sWarriors2 *= 1.3;
+        break;
+      case 10:
+        sWarriors2 *= 1.5;
+        break;
+    }
+
+    const attack = sWarriors2 - mWarriors;
+
+    let result;
+
+    // Gana
+    if (sWarriors2 > mWarriors) {
+      result = 1;
+      mWarriors = 0;
+      sWarriors = attack;
+      // Pierde
+    } else if (sWarriors2 < mWarriors) {
+      result = 0;
+      mWarriors -= Math.round(sWarriors2);
+      sWarriors = 0;
+    }
+
+    // Empate
+    else {
+      if (number == 4 || number == 5) {
+        result = 1;
+        sWarriors = 1;
+        mWarriors = 0;
+      } else if (number == 6) {
+        result = 0;
+        sWarriors = 0;
+        mWarriors = 1;
+      }
+    }
+
+    if (result == 1) {
+      result = 'Has ganado';
+    } else {
+      result = 'Has perdido';
+    }
+
+    const attackResult = {
+      'result': result,
+      'sWarriors': Math.round(sWarriors),
+      'mWarriors': Math.round(mWarriors),
+    };
+
+    this.attackResult = attackResult;
+
+    return attackResult;
   }
+
+  // Abrir modal del ataque
+  openAttackModal(attackModal) {
+    this.attackModal = this.modalService.open(attackModal, { size: 'sm', centered: true });
+  }
+
+  // Cerrar ataque
+  closeAttackModal() {
+    this.attackModal.close();
+  }
+
+  /*******************************************************************************************/
+  /*                                         OTROS                                           */
+  /*******************************************************************************************/
 
   // Buscar jugador por ID
   findPlayerById(id: number) {

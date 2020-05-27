@@ -126,7 +126,7 @@
                     <!-- Terrenos a donde desplazarse -->
                     <ng-container *ngIf="warriorsQuantity > 0">
                         <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
-                            <div class="card rounded-25 pointer" (click)="selectTerrainToMove(i)" [ngStyle]="canMove(i) 
+                            <div class="card rounded-25 pointer" (click)="selectTerrainToMove(attackModal, i)" [ngStyle]="canMove(i) 
                                 && {'background-color': turnPlayer().color, 'color': '#fff'}">
                                 <div class="card-body">
                                     <h1 class="text-center mt-1">
@@ -218,5 +218,24 @@
                     Mover {{ sLand().warriors }}
                 </button>
             </div>
+        </div>
+    </ng-template>
+
+    <!-- Resultado -->
+    <ng-template #attackModal let-close="close">
+        <div class="modal-header">
+            <h5 class="modal-title">Resultado ataque</h5>
+            <button type="button" class="close" (click)="closeAttackModal()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <h1>{{ attackResult.result }}</h1>
+
+            <h1>Ataque</h1>
+            <p>{{ attackWarriors.sWarriors }} | {{ attackWarriors.mWarriors }}</p>
+
+            <h1>Tropas vivas</h1>
+            <p>{{ attackResult.sWarriors }} | {{ attackResult.mWarriors }}</p>
         </div>
     </ng-template>
