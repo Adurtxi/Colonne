@@ -92,27 +92,35 @@ export class HomeComponent implements OnInit {
         }
       );
     }
+
+    if (this.players.length == 3 && this.players.length == this.board.type + 2) {
+      this.board.type = 2;
+    } else if (this.players.length == 4 && this.players.length == this.board.type + 2) {
+      this.board.type = 3;
+    }
   }
 
   // Seleccionar tipo de tablero 
   selectBoard(boardType) {
-    this.board = {
-      'type': boardType.id,
-      'col': boardType.col,
-      'cols': boardType.cols,
-      'row': boardType.row,
-    };
+    if (this.players.length <= boardType.id + 1) {
+      this.board = {
+        'type': boardType.id,
+        'col': boardType.col,
+        'cols': boardType.cols,
+        'row': boardType.row,
+      };
 
-    this.boardLands = [];
+      this.boardLands = [];
 
-    for (let b = 0; b < boardType.cols; b++) {
-      this.boardLands.push(
-        {
-          'id': b + 1,
-          'userId': 0,
-          'warriors': 0,
-        }
-      );
+      for (let b = 0; b < boardType.cols; b++) {
+        this.boardLands.push(
+          {
+            'id': b + 1,
+            'userId': 0,
+            'warriors': 0,
+          }
+        );
+      }
     }
   }
 

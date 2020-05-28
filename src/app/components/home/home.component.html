@@ -1,36 +1,14 @@
 <div class="container-fluid mb-5">
     <div class="row justify-content-center mt-4">
 
-        <div class="col-lg-8" *ngIf="game != true">
+        <div class="col-lg-8 col-sm-12" *ngIf="game != true">
 
             <div class="card rounded-25">
                 <div class="card-body">
-                    <h1 class="text-center">Tablero</h1>
-                    <div class="row mt-4 justify-content-center">
-                        <ng-container *ngFor="let boardType of boardTypes">
-                            <div class="col-3">
-                                <div class="card rounded-25 bg-dark pointer" (click)="selectBoard(boardType)" [ngClass]=" {
-                                        'bg-dark': board.type !=  boardType.id || board == 0,
-                                        'bg-success': board.type == boardType.id
-                                    }">
-                                    <div class="card-body p-4">
-                                        <h1 class="text-center text-light mt-1">
-                                            <i class="fas fa-border-all fa-lg mr-2"></i> {{ boardType.text }}
-                                        </h1>
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-container>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card rounded-25 mt-4">
-                <div class="card-body">
                     <h1 class="text-center">Cantidad de jugadores</h1>
-                    <div class="row mt-4 justify-content-center">
+                    <div class="row justify-content-center">
                         <ng-container *ngFor="let playersQuantity of [2,3,4]">
-                            <div class="col-4">
+                            <div class="col-lg-4 col-sm-12 mt-4">
                                 <div class="card rounded-25 pointer" (click)="selectPlayersQuantity(playersQuantity)" [ngClass]=" {
                                         'bg-dark': players.length != playersQuantity || players.length == 0,
                                         'bg-success': players.length == playersQuantity
@@ -49,7 +27,30 @@
 
             <div class="card rounded-25 mt-4" *ngIf="players && players.length > 0">
                 <div class="card-body">
-                    <h1 class="text-center">Cantidad de jugadores</h1>
+                    <h1 class="text-center">Tablero</h1>
+                    <div class="row justify-content-center">
+                        <ng-container *ngFor="let boardType of boardTypes">
+                            <div class="col-lg-3 mt-4">
+                                <div class="card rounded-25 bg-dark pointer" (click)="selectBoard(boardType)" [ngClass]=" {
+                                                    'bg-dark': board.type !=  boardType.id || board == 0,
+                                                    'bg-success': board.type == boardType.id,
+                                                    'pointer': players.length <= boardType.id + 1
+                                                }">
+                                    <div class="card-body p-4">
+                                        <h1 class="text-center text-light mt-1">
+                                            <i class="fas fa-border-all fa-lg mr-2"></i> {{ boardType.text }}
+                                        </h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card rounded-25 mt-4" *ngIf="players && players.length > 0">
+                <div class="card-body">
+                    <h1 class="text-center">Jugadores</h1>
 
                     <div class="m-4">
                         <table class="table">
