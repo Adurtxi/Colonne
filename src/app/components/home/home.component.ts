@@ -179,15 +179,22 @@ export class HomeComponent implements OnInit {
   addTurn(playerIndex) {
     this.roundNumber += 1;
 
-    let warriors = Math.round((Math.random() * this.players.length) + (this.roundNumber / 10));
+    let warriors = Math.round((Math.random() * this.players.length) + (this.roundNumber / 20));
 
     if (warriors == 0) {
       warriors = 1;
+    } else if (warriors >= 8) {
+      warriors = 8;
     }
 
     this.playerTurnIndex = playerIndex;
 
-    this.players[playerIndex].warriors += warriors;
+    // No acumular más de 20 guerreros
+    if ((this.players[playerIndex].warriors + warriors) > 20) {
+      this.players[playerIndex].warriors = 20;
+    } else {
+      this.players[playerIndex].warriors += warriors;
+    }
   }
 
   // Cuenta atras
@@ -396,42 +403,89 @@ export class HomeComponent implements OnInit {
 
     const number = Math.floor(Math.random() * 10) + 1;
 
-    let sWarriors2 = sWarriors;
+    let valores = [1.5, 1.3, 1.1, 1.1, 1.3, 1.5];
 
-    switch (number) {
-      case 1:
-        sWarriors2 /= 1.5;
-        break;
-      case 2:
-        sWarriors2 /= 1.3;
-        break;
-      case 3:
-        sWarriors2 /= 1.1;
-        break;
-      case 8:
-        sWarriors2 *= 1.1;
-        break;
-      case 9:
-        sWarriors2 *= 1.3;
-        break;
-      case 10:
-        sWarriors2 *= 1.5;
-        break;
+    if (sWarriors <= 20) {
+      valores = [1.3, 1.2, 1.1, 1.1, 1.2, 1.3];
     }
 
-    const attack = sWarriors2 - mWarriors;
+
+    // Mucha diferencia del atacante al defensor
+    if ((sWarriors / mWarriors) > 10) {
+
+      const option = Math.floor(Math.random() * 3) + 1;
+
+      switch (option) {
+        case 1:
+          sWarriors = sWarriors;
+          break;
+        case 2:
+          sWarriors = sWarriors + (mWarriors / 2);
+          break;
+        case 3:
+          sWarriors = sWarriors + mWarriors;
+          break;
+      }
+    }
+
+    else if ((mWarriors / sWarriors) > 10) {
+      const option = Math.floor(Math.random() * 3) + 1;
+
+      switch (option) {
+        case 1:
+          mWarriors = mWarriors;
+          break;
+        case 2:
+          mWarriors = mWarriors - (sWarriors / 2);
+          break;
+        case 3:
+          mWarriors = mWarriors - sWarriors;
+          break;
+      }
+    }
+
+    // Poca diferencia del atacante al defensor
+    else {
+      switch (number) {
+        case 1:
+          sWarriors /= valores[0];
+          break;
+        case 2:
+          sWarriors /= valores[1];
+          break;
+        case 3:
+          sWarriors /= valores[2];
+          break;
+        case 8:
+          sWarriors *= valores[3];
+          break;
+        case 9:
+          sWarriors *= valores[4];
+          break;
+        case 10:
+          sWarriors *= valores[5];
+          break;
+      }
+    }
+
+    const attack = sWarriors - mWarriors;
 
     let win;
 
     // Gana
-    if (sWarriors2 > mWarriors) {
+    if (sWarriors > mWarriors) {
       win = true;
       mWarriors = 0;
-      sWarriors = attack;
+      sWarriors = Math.round(attack);
       // Pierde
-    } else if (sWarriors2 < mWarriors) {
+    } else if (sWarriors < mWarriors) {
       win = false;
-      mWarriors -= Math.round(sWarriors2);
+      mWarriors -= Math.round(sWarriors);
+
+      if (mWarriors == 0) {
+        mWarriors = 1;
+      }
+
       sWarriors = 0;
     }
 
@@ -452,8 +506,8 @@ export class HomeComponent implements OnInit {
       'attacker': this.turnPlayer().name,
       'defender': this.findPlayerById(this.mLand().userId).name,
       'win': win,
-      'sWarriors': Math.round(sWarriors),
-      'mWarriors': Math.round(mWarriors),
+      'sWarriors': sWarriors,
+      'mWarriors': mWarriors,
     };
 
     this.attackResult = attackResult;
