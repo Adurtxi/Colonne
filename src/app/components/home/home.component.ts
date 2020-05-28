@@ -484,11 +484,15 @@ export class HomeComponent implements OnInit {
     if (sWarriors > mWarriors) {
       win = true;
       mWarriors = 0;
-      sWarriors = Math.round(attack);
+      sWarriors = attack;
+
+      if (sWarriors == 0) {
+        sWarriors = 1;
+      }
       // Pierde
     } else if (sWarriors < mWarriors) {
       win = false;
-      mWarriors -= Math.round(sWarriors);
+      mWarriors -= sWarriors;
 
       if (mWarriors == 0) {
         mWarriors = 1;
@@ -509,6 +513,9 @@ export class HomeComponent implements OnInit {
         mWarriors = 1;
       }
     }
+
+    Math.round(sWarriors);
+    Math.round(mWarriors);
 
     const attackResult = {
       'attacker': this.turnPlayer().name,
