@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit {
   game = false;
   gameStarted = false;
 
-  players; // Lista de jugadores
+  players = []; // Lista de jugadores
   board; // Tablero
   boardLands; // Tierras del tablero
 
@@ -71,7 +71,6 @@ export class HomeComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
   ) {
-    this.players = [];
     this.board = 0;
   }
 
@@ -88,7 +87,9 @@ export class HomeComponent implements OnInit {
           'name': '',
           'color': '#fff',
           'warriors': 0,
-          'points': 0
+          'points': 0,
+          'alive': true,
+          'dead': 0,
         }
       );
     }
@@ -140,7 +141,9 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  /* JUEGO */
+  /****************************************************************************************/
+  /*                                       JUEGO                                          */
+  /****************************************************************************************/
 
   // Mostrar tablero
   start() {
@@ -156,6 +159,14 @@ export class HomeComponent implements OnInit {
     this.timer();
   }
 
+  restart() {
+    this.game = false;
+    this.gameStarted = false;
+    this.board = {};
+    this.boardLands = [];
+    this.players = [];
+  }
+
   /****************************************************************************************/
   /*                                      TURNOS                                          */
   /****************************************************************************************/
@@ -169,22 +180,40 @@ export class HomeComponent implements OnInit {
 
   //Cambiar turno
   changeTurn() {
-    this.countdown = 30;
+    if (this.countNotDied() > 1) {
+      this.countdown = 30;
 
-    let playerIndex = 0;
+      const playerIndex = this.nextPlayer(this.playerTurnIndex + 1);
 
-    // Comprobar que exista el siguiente jugador
-    if (this.playerTurnIndex + 2 <= this.players.length) {
-      playerIndex = this.playerTurnIndex + 1;
+      this.addTurn(playerIndex);
+
+      this.finishGame();
+
+      this.resetPlayerChanges();
     }
+  }
 
-    this.addTurn(playerIndex);
+  // Comprobar si existe el siguiente jugador
+  nextPlayer(playerIndex) {
+    if (playerIndex < this.players.length) {
+      if (this.players[playerIndex].alive) {
+        return playerIndex;
+      }
 
-    this.resetPlayerChanges();
+      return this.nextPlayer(playerIndex + 1);
+    } else {
+      if (this.players[0].alive) {
+        return 0;
+      }
+
+      return this.nextPlayer(1);
+    }
   }
 
   // Asignar turno al jugador y añadir guerreros
   addTurn(playerIndex) {
+    this.playerTurnIndex = playerIndex;
+
     this.roundNumber += 1;
 
     let warriors = Math.round((Math.random() * this.players.length) + (this.roundNumber / 20));
@@ -195,10 +224,8 @@ export class HomeComponent implements OnInit {
       warriors = 8;
     }
 
-    this.playerTurnIndex = playerIndex;
-
     // No acumular más de 20 guerreros
-    if ((this.players[playerIndex].warriors + warriors) > 20) {
+    if ((this.turnPlayer().warriors + warriors) > 20) {
       this.players[playerIndex].warriors = 20;
     } else {
       this.players[playerIndex].warriors += warriors;
@@ -452,7 +479,6 @@ export class HomeComponent implements OnInit {
       }
     }
 
-    // Poca diferencia del atacante al defensor
     else {
       switch (number) {
         case 1:
@@ -486,7 +512,7 @@ export class HomeComponent implements OnInit {
       mWarriors = 0;
       sWarriors = attack;
 
-      if (sWarriors == 0) {
+      if (sWarriors < 1) {
         sWarriors = 1;
       }
       // Pierde
@@ -494,7 +520,7 @@ export class HomeComponent implements OnInit {
       win = false;
       mWarriors -= sWarriors;
 
-      if (mWarriors == 0) {
+      if (mWarriors < 1) {
         mWarriors = 1;
       }
 
@@ -507,15 +533,15 @@ export class HomeComponent implements OnInit {
         win = true;
         sWarriors = 1;
         mWarriors = 0;
-      } else if (number == 6) {
+      } else if (number == 6 || number == 7) {
         win = false;
         sWarriors = 0;
         mWarriors = 1;
       }
     }
 
-    Math.round(sWarriors);
-    Math.round(mWarriors);
+    sWarriors = Math.round(sWarriors);
+    mWarriors = Math.round(mWarriors);
 
     const attackResult = {
       'attacker': this.turnPlayer().name,
@@ -538,6 +564,36 @@ export class HomeComponent implements OnInit {
   // Cerrar ataque
   closeAttackModal() {
     this.attackModal.close();
+  }
+
+  finishGame() {
+    if (this.countNotDied() == 1) {
+      console.log('Has ganado');
+    }
+
+    else if (this.roundNumber > this.players.length) {
+
+      for (let i = 0; i < this.players.length; i++) {
+        const landExist = this.boardLands.some(land => land.userId == this.players[i].id);
+
+        if (!landExist && this.players[i].alive) {
+          this.players[i].alive = false;
+          this.players[i].died = this.roundNumber;
+        }
+      }
+    }
+  }
+
+  countNotDied() {
+    let count = 0;
+
+    for (let i = 0; i < this.players.length; i++) {
+      if (this.players[i].alive) {
+        count++;
+      }
+    }
+
+    return count;
   }
 
   /*******************************************************************************************/
