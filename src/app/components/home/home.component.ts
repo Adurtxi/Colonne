@@ -11,8 +11,15 @@ export class HomeComponent implements OnInit {
   landModal; //Modal acciones terreno
   attackModal; //Modal del resultado del ataque
 
-  game = false;
-  gameStarted = false;
+  // Configuraciones del juego
+  game = {
+    'view': false,
+    'started': false,
+    'background': 1,
+    'roundNumber': 0,
+    'roundTime': 30,
+    'paused': false,
+  };
 
   players = []; // Lista de jugadores
   board; // Tablero
@@ -21,11 +28,7 @@ export class HomeComponent implements OnInit {
   sLandIndex; //Index del terreno seleccionado
   mLandIndex; //Index del terreno a mover
 
-  countdown = 30; // Cuenta atras
-
   playerTurnIndex = 0; // Index del usuario del turno
-
-  roundNumber = 0; // Número de ronda
 
   warriorsQuantity = 1; // Cantidad de guerreros a mover
   addWarriorsQuantity = 1; // Cantidad de guerreros a añadir
@@ -38,34 +41,10 @@ export class HomeComponent implements OnInit {
   move = false;
 
   boardTypes = [
-    {
-      'id': 1,
-      'text': '2 x 2',
-      'col': 'col-6',
-      'cols': 4,
-      'row': 2,
-    },
-    {
-      'id': 2,
-      'text': '3 x 3',
-      'col': 'col-4',
-      'cols': 9,
-      'row': 3,
-    },
-    {
-      'id': 3,
-      'text': '4 x 4',
-      'col': 'col-3',
-      'cols': 16,
-      'row': 4,
-    },
-    {
-      'id': 4,
-      'text': '6 x 6',
-      'col': 'col-2',
-      'cols': 36,
-      'row': 6,
-    },
+    { 'id': 1, 'text': '2 x 2', 'col': 'col-6', 'cols': 4, 'row': 2, },
+    { 'id': 2, 'text': '3 x 3', 'col': 'col-4', 'cols': 9, 'row': 3, },
+    { 'id': 3, 'text': '4 x 4', 'col': 'col-3', 'cols': 16, 'row': 4, },
+    { 'id': 4, 'text': '6 x 6', 'col': 'col-2', 'cols': 36, 'row': 6, },
   ];
 
   constructor(
@@ -132,7 +111,9 @@ export class HomeComponent implements OnInit {
 
   // Botón disabled
   incompletePlayers() {
-    if (this.players.findIndex(player => player.color == '#fff') >= 0) {
+    if (this.players.length == 0) {
+      return true;
+    } else if (this.players.findIndex(player => player.color == '#fff') >= 0) {
       return true;
     } else if (this.players.findIndex(player => player.name == '') >= 0) {
       return true;
@@ -145,23 +126,29 @@ export class HomeComponent implements OnInit {
   /*                                       JUEGO                                          */
   /****************************************************************************************/
 
-  // Mostrar tablero
-  start() {
-    this.game = true;
-  }
-
   // Empezar los turnos
   startGame() {
-    this.gameStarted = true;
+    this.game.started = true;
 
     this.firstTurn();
 
     this.timer();
   }
 
+  pauseGame() {
+    this.game.paused = !this.game.paused;
+
+    if (!this.game.paused) {
+      this.timer();
+    }
+  }
+
   restart() {
-    this.game = false;
-    this.gameStarted = false;
+    this.game.view = false;
+    this.game.started = false;
+    this.game.roundNumber = 0;
+
+    this.move = false;
     this.board = {};
     this.boardLands = [];
     this.players = [];
@@ -181,8 +168,6 @@ export class HomeComponent implements OnInit {
   //Cambiar turno
   changeTurn() {
     if (this.countNotDied() > 1) {
-      this.countdown = 30;
-
       const playerIndex = this.nextPlayer(this.playerTurnIndex + 1);
 
       this.addTurn(playerIndex);
@@ -190,6 +175,8 @@ export class HomeComponent implements OnInit {
       this.finishGame();
 
       this.resetPlayerChanges();
+
+      this.game.roundTime = 30;
     }
   }
 
@@ -214,9 +201,9 @@ export class HomeComponent implements OnInit {
   addTurn(playerIndex) {
     this.playerTurnIndex = playerIndex;
 
-    this.roundNumber += 1;
+    this.game.roundNumber += 1;
 
-    let warriors = Math.round((Math.random() * this.players.length) + (this.roundNumber / 20));
+    let warriors = Math.round((Math.random() * this.players.length) + (this.game.roundNumber / 20));
 
     if (warriors == 0) {
       warriors = 1;
@@ -234,13 +221,12 @@ export class HomeComponent implements OnInit {
 
   // Cuenta atras
   async timer() {
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < this.game.roundTime && this.game.paused != true; i++) {
       await this.delay();
-      this.countdown -= 1;
+      this.game.roundTime -= 1;
 
-      if (this.countdown == 0) {
+      if (this.game.roundTime == 0) {
         this.changeTurn();
-        this.countdown = 30;
       }
     }
 
@@ -259,6 +245,8 @@ export class HomeComponent implements OnInit {
     this.warriorsQuantity = 1;
     this.addWarriorsQuantity = 1;
 
+    this.move = false;
+
     if (this.landModal) {
       this.closeLandModal();
     }
@@ -270,7 +258,7 @@ export class HomeComponent implements OnInit {
 
   // Seleccionar terrero y abrir modal
   openLandModal(content, landIndex) {
-    if (this.gameStarted) {
+    if (this.game.started) {
       this.sLandIndex = landIndex;
 
       if (this.sLand().userId == this.turnPlayer().id || this.sLand().userId == 0) {
@@ -430,6 +418,7 @@ export class HomeComponent implements OnInit {
     this.move = false;
   }
 
+  // Algoritmo de ataque
   attack(sWarriors: number, mWarriors: number) {
     this.attackWarriors = {
       'sWarriors': sWarriors,
@@ -571,14 +560,14 @@ export class HomeComponent implements OnInit {
       console.log('Has ganado');
     }
 
-    else if (this.roundNumber > this.players.length) {
+    else if (this.game.roundNumber > this.players.length) {
 
       for (let i = 0; i < this.players.length; i++) {
         const landExist = this.boardLands.some(land => land.userId == this.players[i].id);
 
         if (!landExist && this.players[i].alive) {
           this.players[i].alive = false;
-          this.players[i].died = this.roundNumber;
+          this.players[i].died = this.game.roundNumber;
         }
       }
     }
