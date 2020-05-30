@@ -116,9 +116,48 @@
                 </div>
             </div>
 
+            <div class="card rounded-25 mt-4">
+                <div class="card-body">
+                    <h1 class="text-center">Partida</h1>
+
+                    <div class="row">
+                        <div class="col-lg-4 col-sm-12">
+                            <div class="form-group">
+                                <label for="roundTime">Tiempo de la ronda</label>
+                                <input name="roundTime" type="number" [(ngModel)]="game.roundTime" min="1" max="60" class="form-control rounded-25" placeholder="Tiempo de la ronda">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-12">
+                            <div class="form-group">
+                                <label for="roundTime">Rondas maximas</label>
+                                <select class="form-control rounded-25" name="maxRounds" id="roundTime" [(ngModel)]="game.maxRounds">
+                                    <ng-container *ngFor="let i of [0,10,20,30,40,50,60,70,80,90,100]">
+                                        <option [value]="i">
+                                            <span *ngIf="i == 0">Sin límite</span>
+                                            <span *ngIf="i > 0">{{ i }}</span>
+                                        </option>
+                                    </ng-container>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-12">
+                            <div class="form-group">
+                                <label for="warriorsQuantity">Velocidad</label>
+                                <select class="form-control rounded-25" id="velocity" name="velocity" [(ngModel)]="game.velocity">
+                                    <option value="0">Lenta</option>
+                                    <option value="1">Normal</option>
+                                    <option value="2">Rápida</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
             <div class="d-flex justify-content-center mt-4">
                 <div class="col-lg-4 col-sm-12">
-                    <button class="btn btn-success btn-block btn-lg rounded-25" [disabled]="incompletePlayers() || board == 0" (click)="game.view = true">
+                    <button class="btn btn-success btn-block btn-lg rounded-25" [disabled]="incompletePlayers() || board == 0" (click)="changeView()">
                         <i class="fas fa-gamepad mr-2"></i> ¡Empezar a jugar!
                     </button>
                 </div>
@@ -212,7 +251,7 @@
             <div class="col-lg-2 col-md-6 col-sm-6">
                 <div class="d-flex justify-content-center mb-4 bg-light rounded-25 pt-1">
                     Tiempo:
-                    <h1 class="ml-4">{{ game.roundTime }}</h1>
+                    <h1 class="ml-4">{{ countdown }}</h1>
                 </div>
 
                 <div class="card rounded-25 mb-4" *ngFor="let player of players" [ngClass]=" {

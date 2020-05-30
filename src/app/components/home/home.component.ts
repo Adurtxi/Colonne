@@ -19,7 +19,11 @@ export class HomeComponent implements OnInit {
     'roundNumber': 0,
     'roundTime': 30,
     'paused': false,
+    'maxRounds': 0,
+    'velocity': 1,
   };
+
+  countdown;
 
   players = []; // Lista de jugadores
   board; // Tablero
@@ -126,6 +130,11 @@ export class HomeComponent implements OnInit {
   /*                                       JUEGO                                          */
   /****************************************************************************************/
 
+  changeView() {
+    this.game.view = true;
+    this.countdown = this.game.roundTime;
+  }
+
   // Empezar los turnos
   startGame() {
     this.game.started = true;
@@ -176,7 +185,7 @@ export class HomeComponent implements OnInit {
 
       this.resetPlayerChanges();
 
-      this.game.roundTime = 30;
+      this.countdown = this.game.roundTime;
     }
   }
 
@@ -221,11 +230,11 @@ export class HomeComponent implements OnInit {
 
   // Cuenta atras
   async timer() {
-    for (let i = 0; i < this.game.roundTime && this.game.paused != true; i++) {
+    for (let i = 0; i < this.countdown && this.game.paused != true; i++) {
       await this.delay();
-      this.game.roundTime -= 1;
+      this.countdown -= 1;
 
-      if (this.game.roundTime == 0) {
+      if (this.countdown == 0) {
         this.changeTurn();
       }
     }
