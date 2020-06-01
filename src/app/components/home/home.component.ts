@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
     'velocity': 1,
   };
 
-  countdown;
+  countdown = this.game.roundTime;
 
   players = []; // Lista de jugadores
   board; // Tablero
@@ -143,6 +143,7 @@ export class HomeComponent implements OnInit {
   // Empezar los turnos
   startGame() {
     this.game.started = true;
+    this.game.paused = false;
 
     this.firstTurn();
 
@@ -158,12 +159,19 @@ export class HomeComponent implements OnInit {
   }
 
   restart() {
-    this.game.view = false;
-    this.game.started = false;
-    this.game.roundNumber = 0;
+    this.game = {
+      'view': false,
+      'started': false,
+      'background': 1,
+      'roundNumber': 0,
+      'roundTime': 30,
+      'paused': true,
+      'maxRounds': 0,
+      'velocity': 1,
+    };
 
     this.move = false;
-    this.board = {};
+    this.board = 0;
     this.boardLands = [];
     this.players = [];
   }
@@ -588,15 +596,17 @@ export class HomeComponent implements OnInit {
   }
 
   countNotDied() {
-    let count = 0;
+    if (this.game.started == true) {
+      let count = 0;
 
-    for (let i = 0; i < this.players.length; i++) {
-      if (this.players[i].alive) {
-        count++;
+      for (let i = 0; i < this.players.length; i++) {
+        if (this.players[i].alive) {
+          count++;
+        }
       }
-    }
 
-    return count;
+      return count;
+    }
   }
 
   /*******************************************************************************************/

@@ -169,12 +169,14 @@
             <!--                                                              TABLERO                                                                         -->
             <!-- ******************************************************************************************************************************************** -->
 
-            <ng-container *ngIf="game.view">
+            <ng-container *ngIf="game.view && playerTurnIndex && turnPlayer()">
                 <div class="col-lg-8 col-md-12 col-sm-12">
 
                     <div class="row mb-4">
                         <div class="col-lg-2 col-md-4 col-sm-4">
-                            <h1 class="text-light">Ronda {{ game.roundNumber }}</h1>
+                            <h1 class="text-light">Ronda {{ game.roundNumber }}
+                                <span *ngIf="game.maxRounds > 0">/ {{ game.maxRounds }}</span>
+                            </h1>
                         </div>
                     </div>
 
@@ -298,16 +300,15 @@
                         <button class="btn btn-success btn-block rounded-25" (click)="changeTurn()" *ngIf="countNotDied() > 1">
                             <i class="fas fa-forward mr-2"></i> Siguiente turno
                         </button>
-                        <button class="btn btn-success btn-block rounded-25" (click)="restart()" *ngIf="countNotDied() == 1 || countNotDied() == 0">
+                        <button class="btn btn-success btn-block rounded-25" (click)="restart()" *ngIf="countNotDied() <= 1">
                             <i class="fas fa-redo-alt mr-2"></i> Jugar de nuevo
                         </button>
+
+                        <button class="btn btn-dark btn-block rounded-25" (click)="pauseGame()" *ngIf="countNotDied() > 1">
+                            <span *ngIf="game.paused"><i class="fas fa-hourglass-start mr-2"></i> Reanudar</span>
+                            <span *ngIf="!game.paused"><i class="fas fa-hourglass-end mr-2"></i> Pausar</span>
+                        </button>
                     </ng-container>
-
-                    <button class="btn btn-dark btn-block rounded-25" (click)="pauseGame()">
-                        <span *ngIf="game.paused"><i class="fas fa-hourglass-start mr-2"></i> Reanudar</span>
-                        <span *ngIf="!game.paused"><i class="fas fa-hourglass-end mr-2"></i> Pausar</span>
-                    </button>
-
                 </div>
 
             </ng-container>
