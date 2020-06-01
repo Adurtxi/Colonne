@@ -59,6 +59,11 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void { }
 
+  // Fondo de la página
+  gameBackground() {
+    return 'url(assets/img/backgrounds/background' + this.game.background + '.jpg)';
+  }
+
   // Seleccionar cantidad de jugadores
   selectPlayersQuantity(playersQuantity: number) {
     this.players = [];

@@ -15,18 +15,15 @@ html {
     min-height: 100%;
 }
 
-body {
-    background-image: url("assets/img/backgrounds/background1.jpg");
-    background-repeat: no-repeat;
+.background-image {
+    min-height: 100vh;
+    position: relative;
     background-size: 100% 100%;
-}
-
-.base-content {
-    margin-bottom: 4rem;
+    background-repeat: no-repeat;
 }
 
 footer {
-    position: absolute;
+    position: relative;
     bottom: 0;
     height: 2rem;
     line-height: 2rem;

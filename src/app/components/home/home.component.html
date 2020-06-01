@@ -1,388 +1,395 @@
-<div class="container-fluid mb-5">
-    <div class="row justify-content-center mt-4">
+<div class="background-image" [ngStyle]="{'background-image': gameBackground()}">
+    <div class="container-fluid">
+        <div class="row justify-content-center pt-4">
 
-        <!-- ******************************************************************************************************************************************** -->
-        <!--                                                     SELECTOR DE TABLERO Y JUGADORES                                                          -->
-        <!-- ******************************************************************************************************************************************** -->
+            <!-- ******************************************************************************************************************************************** -->
+            <!--                                                     SELECTOR DE TABLERO Y JUGADORES                                                          -->
+            <!-- ******************************************************************************************************************************************** -->
 
-        <div class="col-lg-8 col-sm-12" *ngIf="game.view != true">
+            <div class="col-lg-8 col-sm-12" *ngIf="game.view != true">
 
-            <div class="card rounded-25">
-                <div class="card-body">
-                    <h1 class="text-center">Cantidad de jugadores</h1>
-                    <div class="row justify-content-center">
+                <div class="card rounded-25">
+                    <div class="card-body">
+                        <h1 class="text-center">Cantidad de jugadores</h1>
+                        <div class="row justify-content-center">
 
-                        <ng-container *ngFor="let playersQuantity of [2,3,4]">
-                            <div class="col-lg-4 col-sm-12 mt-4">
-                                <div class="card rounded-25 pointer" (click)="selectPlayersQuantity(playersQuantity)" [ngClass]=" {
+                            <ng-container *ngFor="let playersQuantity of [2,3,4]">
+                                <div class="col-lg-4 col-sm-12 mt-4">
+                                    <div class="card rounded-25 pointer" (click)="selectPlayersQuantity(playersQuantity)" [ngClass]=" {
                                         'bg-dark': players.length != playersQuantity || players.length == 0,
                                         'bg-success': players.length == playersQuantity
                                     }">
 
-                                    <div class="card-body p-4">
-                                        <h1 class="text-center text-light mt-1">
-                                            <i class="fas fa-user-check fa-lg mr-2"></i> {{ playersQuantity }}
-                                        </h1>
+                                        <div class="card-body p-4">
+                                            <h1 class="text-center text-light mt-1">
+                                                <i class="fas fa-user-check fa-lg mr-2"></i> {{ playersQuantity }}
+                                            </h1>
+                                        </div>
+
                                     </div>
-
                                 </div>
-                            </div>
-                        </ng-container>
+                            </ng-container>
 
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="card rounded-25 mt-4" *ngIf="players && players.length > 0">
-                <div class="card-body">
-                    <h1 class="text-center">Jugadores</h1>
+                <div class="card rounded-25 mt-4" *ngIf="players && players.length > 0">
+                    <div class="card-body">
+                        <h1 class="text-center">Jugadores</h1>
 
-                    <div class="m-4">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Nombre</th>
-                                    <th>Color</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <ng-container *ngFor="let player of players; let i=index">
+                        <div class="m-4">
+                            <table class="table">
+                                <thead>
                                     <tr>
-                                        <td class="pt-3">{{ player.id }}</td>
-                                        <td class="pt-3">
-                                            <input type="text" class="form-control rounded-25" [(ngModel)]="player.name" required />
-                                        </td>
-                                        <td>
-                                            <app-color-picker [players]="players" [color]="player.color" heading="Color" (event)="setColor(i, $event)">
-                                            </app-color-picker>
-                                        </td>
+                                        <th>Id</th>
+                                        <th>Nombre</th>
+                                        <th>Color</th>
                                     </tr>
-                                </ng-container>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngFor="let player of players; let i=index">
+                                        <tr>
+                                            <td class="pt-3">{{ player.id }}</td>
+                                            <td class="pt-3">
+                                                <input type="text" class="form-control rounded-25" [(ngModel)]="player.name" required />
+                                            </td>
+                                            <td>
+                                                <app-color-picker [players]="players" [color]="player.color" heading="Color" (event)="setColor(i, $event)">
+                                                </app-color-picker>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="card rounded-25 mt-4">
-                <div class="card-body">
-                    <h1 class="text-center">Tablero</h1>
-                    <div class="row justify-content-center">
+                <div class="card rounded-25 mt-4">
+                    <div class="card-body">
+                        <h1 class="text-center">Tablero</h1>
+                        <div class="row justify-content-center">
 
-                        <ng-container *ngFor="let boardType of boardTypes">
-                            <div class="col-lg-3 mt-4">
-                                <div class="card rounded-25" [ngClass]=" {
+                            <ng-container *ngFor="let boardType of boardTypes">
+                                <div class="col-lg-3 mt-4">
+                                    <div class="card rounded-25" [ngClass]=" {
                                         'bg-dark': board.type !=  boardType.id || board == 0,
                                         'bg-success': board.type == boardType.id,
                                         'pointer': players.length <= boardType.id + 1
                                     }" (click)="selectBoard(boardType)">
 
-                                    <div class="card-body p-4">
-                                        <h1 class="text-center text-light mt-1">
-                                            <i class="fas fa-border-all fa-lg mr-2"></i> {{ boardType.text }}
+                                        <div class="card-body p-4">
+                                            <h1 class="text-center text-light mt-1">
+                                                <i class="fas fa-border-all fa-lg mr-2"></i> {{ boardType.text }}
+                                            </h1>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card rounded-25 mt-4">
+                    <div class="card-body">
+                        <h1 class="text-center">Fondo</h1>
+                        <div class="row justify-content-center">
+
+                            <ng-container *ngFor="let num of [1,2,3]">
+                                <div class="col-lg-4 mt-4">
+                                    <div class="card rounded-25 pointer" [ngClass]=" {
+                                        'bg-dark': game.background !=  num || game.background == 0,
+                                        'bg-success': game.background == num
+                                    }" (click)="game.background = num">
+
+                                        <div class="card-body p-1">
+                                            <img src="assets/img/backgrounds/background{{num}}.jpg" class="w-100 rounded-25">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card rounded-25 mt-4">
+                    <div class="card-body">
+                        <h1 class="text-center">Partida</h1>
+
+                        <div class="row">
+                            <div class="col-lg-4 col-sm-12">
+                                <div class="form-group">
+                                    <label for="roundTime">Tiempo de la ronda</label>
+                                    <input name="roundTime" type="number" [(ngModel)]="game.roundTime" min="1" max="60" class="form-control rounded-25" placeholder="Tiempo de la ronda">
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-sm-12">
+                                <div class="form-group">
+                                    <label for="roundTime">Rondas maximas</label>
+                                    <select class="form-control rounded-25" name="maxRounds" id="roundTime" [(ngModel)]="game.maxRounds">
+                                        <ng-container *ngFor="let i of [0,10,20,30,40,50,60,70,80,90,100]">
+                                            <option [value]="i">
+                                                <span *ngIf="i == 0">Sin límite</span>
+                                                <span *ngIf="i > 0">{{ i }}</span>
+                                            </option>
+                                        </ng-container>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-sm-12">
+                                <div class="form-group">
+                                    <label for="warriorsQuantity">Velocidad</label>
+                                    <select class="form-control rounded-25" id="velocity" name="velocity" [(ngModel)]="game.velocity">
+                                        <option value="0">Lenta</option>
+                                        <option value="1">Normal</option>
+                                        <option value="2">Rápida</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center mt-4 mb-5">
+                    <div class="col-lg-4 col-sm-12">
+                        <button class="btn btn-success btn-block btn-lg rounded-25" [disabled]="incompletePlayers() || board == 0" (click)="changeView()">
+                            <i class="fas fa-gamepad mr-2"></i> ¡Empezar a jugar!
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ******************************************************************************************************************************************** -->
+            <!--                                                              TABLERO                                                                         -->
+            <!-- ******************************************************************************************************************************************** -->
+
+            <ng-container *ngIf="game.view">
+                <div class="col-lg-8 col-md-12 col-sm-12">
+
+                    <div class="row mb-4">
+                        <div class="col-lg-2 col-md-4 col-sm-4">
+                            <h1 class="text-light">Ronda {{ game.roundNumber }}</h1>
+                        </div>
+                    </div>
+
+                    <!-- Terrenos -->
+                    <div class="row">
+
+                        <!-- Terrenos -->
+                        <ng-container *ngIf="!move">
+                            <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
+                                <div class="card rounded-25" (click)="openLandModal(landModal, i)" [ngStyle]="boardLand.userId > 0 
+                                && {'background-color': findPlayerById(boardLand.userId).color, 'color': '#fff'}" [class.pointer]="boardLand.userId == turnPlayer().id || boardLand.userId == 0">
+
+                                    <div class="card-body">
+                                        <ng-container *ngIf="boardLand.warriors > 0">
+                                            <img src="assets/img/icons/helmet.png" style="width: 50px;" alt="Guerrero">
+                                            <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="boardLand.warriors == 0">
+                                            <img src="assets/img/icons/land.png" style="width: 50px;" alt="Terreno">
+                                        </ng-container>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <!-- Terrenos a donde desplazarse -->
+                        <ng-container *ngIf="move">
+                            <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
+                                <div class="card rounded-25" (click)="selectTerrainToMove(attackModal, i)" [ngStyle]="canMove(i) 
+                                && {'background-color': turnPlayer().color, 'color': '#fff'}" [class.pointer]="canMove(i)">
+
+                                    <div class="card-body">
+                                        <h1 class="text-center mt-1">
+
+                                            <!-- El jugador puede moverse y el terreno está ocupado-->
+                                            <ng-container *ngIf="canMove(i) && boardLand.userId != 0 && boardLand.userId != turnPlayer().id">
+                                                <img src="assets/img/icons/attack.png" style="width: 50px;" alt="Atacar">
+                                                <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
+                                            </ng-container>
+
+                                            <!-- El jugador no puede moverse y el terreno está ocupado-->
+                                            <ng-container *ngIf="!canMove(i) && boardLand.userId != 0 && boardLand.userId != turnPlayer().id">
+                                                <img src="assets/img/icons/castle.png" style="width: 50px;" alt="Atacar">
+                                                <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
+                                            </ng-container>
+
+                                            <!-- El terreno a mover pertenece al jugador -->
+                                            <ng-container *ngIf="boardLand.userId == turnPlayer().id">
+                                                <img src="assets/img/icons/person.png" style="width: 50px;" alt="Mover">
+                                                <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
+                                            </ng-container>
+
+                                            <!-- El jugador puede moverse y el terreno no está ocupado-->
+                                            <ng-container *ngIf="canMove(i) && boardLand.userId == 0">
+                                                <img src="assets/img/icons/conquest.png" style="width: 50px;" alt="Conquistar">
+                                            </ng-container>
+
+                                            <!-- El jugador no puede moverse y el terreno no está ocupado-->
+                                            <ng-container *ngIf="!canMove(i) && boardLand.userId == 0">
+                                                <img src="assets/img/icons/land.png" style="width: 50px;" alt="Terreno">
+                                            </ng-container>
+
                                         </h1>
                                     </div>
 
                                 </div>
                             </div>
                         </ng-container>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="card rounded-25 mt-4">
-                <div class="card-body">
-                    <h1 class="text-center">Fondo</h1>
-                    <div class="row justify-content-center">
-
-                        <ng-container *ngFor="let num of [1,2,3]">
-                            <div class="col-lg-4 mt-4">
-                                <div class="card rounded-25 pointer" [ngClass]=" {
-                                        'bg-dark': game.background !=  num || game.background == 0,
-                                        'bg-success': game.background == num
-                                    }" (click)="game.background = num">
-
-                                    <div class="card-body p-1">
-                                        <img src="assets/img/backgrounds/background{{num}}.jpg" class="w-100 rounded-25">
-                                    </div>
-
-                                </div>
-                            </div>
-                        </ng-container>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="card rounded-25 mt-4">
-                <div class="card-body">
-                    <h1 class="text-center">Partida</h1>
-
-                    <div class="row">
-                        <div class="col-lg-4 col-sm-12">
-                            <div class="form-group">
-                                <label for="roundTime">Tiempo de la ronda</label>
-                                <input name="roundTime" type="number" [(ngModel)]="game.roundTime" min="1" max="60" class="form-control rounded-25" placeholder="Tiempo de la ronda">
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-12">
-                            <div class="form-group">
-                                <label for="roundTime">Rondas maximas</label>
-                                <select class="form-control rounded-25" name="maxRounds" id="roundTime" [(ngModel)]="game.maxRounds">
-                                    <ng-container *ngFor="let i of [0,10,20,30,40,50,60,70,80,90,100]">
-                                        <option [value]="i">
-                                            <span *ngIf="i == 0">Sin límite</span>
-                                            <span *ngIf="i > 0">{{ i }}</span>
-                                        </option>
-                                    </ng-container>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-12">
-                            <div class="form-group">
-                                <label for="warriorsQuantity">Velocidad</label>
-                                <select class="form-control rounded-25" id="velocity" name="velocity" [(ngModel)]="game.velocity">
-                                    <option value="0">Lenta</option>
-                                    <option value="1">Normal</option>
-                                    <option value="2">Rápida</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-center mt-4">
-                <div class="col-lg-4 col-sm-12">
-                    <button class="btn btn-success btn-block btn-lg rounded-25" [disabled]="incompletePlayers() || board == 0" (click)="changeView()">
-                        <i class="fas fa-gamepad mr-2"></i> ¡Empezar a jugar!
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ******************************************************************************************************************************************** -->
-        <!--                                                              TABLERO                                                                         -->
-        <!-- ******************************************************************************************************************************************** -->
-
-        <ng-container *ngIf="game.view">
-            <div class="col-lg-8 col-md-12 col-sm-12">
-
-                <div class="row mb-4">
-                    <div class="col-lg-2 col-md-4 col-sm-4">
-                        <h1 class="text-light">Ronda {{ game.roundNumber }}</h1>
                     </div>
                 </div>
 
-                <!-- Terrenos -->
-                <div class="row">
+                <!-- Jugadores -->
+                <div class="col-lg-2 col-md-6 col-sm-6 mb-5">
+                    <div class="d-flex justify-content-center mb-4 bg-light rounded-25 pt-1">
+                        Tiempo:
+                        <h1 class="ml-4">{{ countdown }}</h1>
+                    </div>
 
-                    <!-- Terrenos -->
-                    <ng-container *ngIf="!move">
-                        <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
-                            <div class="card rounded-25" (click)="openLandModal(landModal, i)" [ngStyle]="boardLand.userId > 0 
-                                && {'background-color': findPlayerById(boardLand.userId).color, 'color': '#fff'}" [class.pointer]="boardLand.userId == turnPlayer().id || boardLand.userId == 0">
-
-                                <div class="card-body">
-                                    <ng-container *ngIf="boardLand.warriors > 0">
-                                        <img src="assets/img/icons/helmet.png" style="width: 50px;" alt="Guerrero">
-                                        <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
-                                    </ng-container>
-
-                                    <ng-container *ngIf="boardLand.warriors == 0">
-                                        <img src="assets/img/icons/land.png" style="width: 50px;" alt="Terreno">
-                                    </ng-container>
-                                </div>
-
-                            </div>
-                        </div>
-                    </ng-container>
-
-                    <!-- Terrenos a donde desplazarse -->
-                    <ng-container *ngIf="move">
-                        <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
-                            <div class="card rounded-25" (click)="selectTerrainToMove(attackModal, i)" [ngStyle]="canMove(i) 
-                                && {'background-color': turnPlayer().color, 'color': '#fff'}" [class.pointer]="canMove(i)">
-
-                                <div class="card-body">
-                                    <h1 class="text-center mt-1">
-
-                                        <!-- El jugador puede moverse y el terreno está ocupado-->
-                                        <ng-container *ngIf="canMove(i) && boardLand.userId != 0 && boardLand.userId != turnPlayer().id">
-                                            <img src="assets/img/icons/attack.png" style="width: 50px;" alt="Atacar">
-                                            <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
-                                        </ng-container>
-
-                                        <!-- El jugador no puede moverse y el terreno está ocupado-->
-                                        <ng-container *ngIf="!canMove(i) && boardLand.userId != 0 && boardLand.userId != turnPlayer().id">
-                                            <img src="assets/img/icons/castle.png" style="width: 50px;" alt="Atacar">
-                                            <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
-                                        </ng-container>
-
-                                        <!-- El terreno a mover pertenece al jugador -->
-                                        <ng-container *ngIf="boardLand.userId == turnPlayer().id">
-                                            <img src="assets/img/icons/person.png" style="width: 50px;" alt="Mover">
-                                            <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
-                                        </ng-container>
-
-                                        <!-- El jugador puede moverse y el terreno no está ocupado-->
-                                        <ng-container *ngIf="canMove(i) && boardLand.userId == 0">
-                                            <img src="assets/img/icons/conquest.png" style="width: 50px;" alt="Conquistar">
-                                        </ng-container>
-
-                                        <!-- El jugador no puede moverse y el terreno no está ocupado-->
-                                        <ng-container *ngIf="!canMove(i) && boardLand.userId == 0">
-                                            <img src="assets/img/icons/land.png" style="width: 50px;" alt="Terreno">
-                                        </ng-container>
-
-                                    </h1>
-                                </div>
-
-                            </div>
-                        </div>
-                    </ng-container>
-                </div>
-            </div>
-
-            <!-- Jugadores -->
-            <div class="col-lg-2 col-md-6 col-sm-6">
-                <div class="d-flex justify-content-center mb-4 bg-light rounded-25 pt-1">
-                    Tiempo:
-                    <h1 class="ml-4">{{ countdown }}</h1>
-                </div>
-
-                <div class="card rounded-25 mb-4" *ngFor="let player of players" [ngClass]=" {
+                    <div class="card rounded-25 mb-4" *ngFor="let player of players" [ngClass]=" {
                     'bg-light': game.started && player.id != turnPlayer().id,
                     'bg-dark text-light': game.started && player.id == turnPlayer().id }">
 
-                    <div class="card-body">
-                        <!-- El jugador está vivo -->
-                        <ng-container *ngIf="player.alive">
-                            <p>
-                                Nombre:
-                                <span class="float-right">{{player.name}}</span>
-                            </p>
-                            <p>
-                                Guerreros:
-                                <span class="float-right">{{player.warriors}}</span>
-                            </p>
-                            <p>
-                                Puntos:
-                                <span class="float-right">{{player.points}}</span>
-                            </p>
-                        </ng-container>
+                        <div class="card-body">
+                            <!-- El jugador está vivo -->
+                            <ng-container *ngIf="player.alive">
+                                <p>
+                                    Nombre:
+                                    <span class="float-right">{{player.name}}</span>
+                                </p>
+                                <p>
+                                    Guerreros:
+                                    <span class="float-right">{{player.warriors}}</span>
+                                </p>
 
-                        <!-- El jugador ha muerto-->
-                        <ng-container *ngIf="!player.alive">
-                            <p>Muerto en ronda {{ player.died }}</p>
-                        </ng-container>
+                            </ng-container>
 
-                        <div class="circle" [ngStyle]="{'background-color': player.color}"></div>
+                            <!-- El jugador ha muerto-->
+                            <ng-container *ngIf="!player.alive">
+                                <p>Muerto en ronda {{ player.died }}</p>
+                            </ng-container>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="circle" [ngStyle]="{'background-color': player.color}"></div>
+                                </div>
+                                <div class="col-6">
+                                    <span class="float-right">{{player.points}}</span>
+                                </div>
+                            </div>
+
+                        </div>
+
                     </div>
 
+                    <button class="btn btn-success btn-block rounded-25" (click)="startGame()" *ngIf="!game.started">
+                        <i class="fas fa-gamepad mr-2"></i> Empezar
+                    </button>
+                    <ng-container *ngIf="game.started">
+                        <button class="btn btn-success btn-block rounded-25" (click)="changeTurn()" *ngIf="countNotDied() > 1">
+                            <i class="fas fa-forward mr-2"></i> Siguiente turno
+                        </button>
+                        <button class="btn btn-success btn-block rounded-25" (click)="restart()" *ngIf="countNotDied() == 1 || countNotDied() == 0">
+                            <i class="fas fa-redo-alt mr-2"></i> Jugar de nuevo
+                        </button>
+                    </ng-container>
+
+                    <button class="btn btn-dark btn-block rounded-25" (click)="pauseGame()">
+                        <span *ngIf="game.paused"><i class="fas fa-hourglass-start mr-2"></i> Reanudar</span>
+                        <span *ngIf="!game.paused"><i class="fas fa-hourglass-end mr-2"></i> Pausar</span>
+                    </button>
+
                 </div>
 
-                <button class="btn btn-success btn-block rounded-25" (click)="startGame()" *ngIf="!game.started">
-                    <i class="fas fa-gamepad mr-2"></i> Empezar
-                </button>
-                <ng-container *ngIf="game.started">
-                    <button class="btn btn-success btn-block rounded-25" (click)="changeTurn()" *ngIf="countNotDied() > 1">
-                        <i class="fas fa-forward mr-2"></i> Siguiente turno
-                    </button>
-                    <button class="btn btn-success btn-block rounded-25" (click)="restart()" *ngIf="countNotDied() == 1 || countNotDied() == 0">
-                        <i class="fas fa-redo-alt mr-2"></i> Jugar de nuevo
-                    </button>
-                </ng-container>
-
-                <button class="btn btn-dark btn-block rounded-25" (click)="pauseGame()">
-                    <span *ngIf="game.paused"><i class="fas fa-hourglass-start mr-2"></i> Reanudar</span>
-                    <span *ngIf="!game.paused"><i class="fas fa-hourglass-end mr-2"></i> Pausar</span>
-                </button>
-
-            </div>
-
-        </ng-container>
+            </ng-container>
+        </div>
     </div>
-</div>
 
-<!-- Terreno -->
-<ng-template #landModal let-close="close">
-    <div class="modal-header">
-        <h5 class="modal-title">Tierra {{ sLand().id }}</h5>
-        <button type="button" class="close" (click)="closeLandModal()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <ng-container *ngIf="sLand().userId > 0">
-            <p>Propietario: {{ findPlayerById(sLand().userId).name }}</p>
-            <p>Defensores: {{ sLand().warriors }}</p>
-        </ng-container>
-
-        <div class="mt-4" *ngIf="showButtons('add') && sLand().warriors == 0">
-            <input name="warriors" type="number" [(ngModel)]="addWarriorsQuantity" min="1" max="{{this.turnPlayer().warriors}}" class="form-control rounded-25" placeholder="Añadir" (keyup.enter)="addWarriors()">
-
-            <button class="btn btn-success rounded-25 btn-block mt-2" (click)="addWarriors()">
-                Asignar {{ addWarriorsQuantity }}
+    <!-- Terreno -->
+    <ng-template #landModal let-close="close">
+        <div class="modal-header">
+            <h5 class="modal-title">Tierra {{ sLand().id }}</h5>
+            <button type="button" class="close" (click)="closeLandModal()">
+                <span aria-hidden="true">&times;</span>
             </button>
         </div>
+        <div class="modal-body">
+            <ng-container *ngIf="sLand().userId > 0">
+                <p>Propietario: {{ findPlayerById(sLand().userId).name }}</p>
+                <p>Defensores: {{ sLand().warriors }}</p>
+            </ng-container>
 
-        <div class="row justify-content-center" *ngIf="sLand().warriors > 0">
-            <div class="col-lg-6">
-                <div class="mt-4" *ngIf="showButtons('add')">
-                    <input name="warriors" type="number" [(ngModel)]="addWarriorsQuantity" min="1" max="{{this.turnPlayer().warriors}}" class="form-control rounded-25" placeholder="Añadir" (keyup.enter)="addWarriors()">
+            <div class="mt-4" *ngIf="showButtons('add') && sLand().warriors == 0">
+                <input name="warriors" type="number" [(ngModel)]="addWarriorsQuantity" min="1" max="{{this.turnPlayer().warriors}}" class="form-control rounded-25" placeholder="Añadir" (keyup.enter)="addWarriors()">
 
-                    <button class="btn btn-success rounded-25 btn-block mt-2" (click)="addWarriors()">
-                        Asignar {{ addWarriorsQuantity }}
-                    </button>
-                </div>
+                <button class="btn btn-success rounded-25 btn-block mt-2" (click)="addWarriors()">
+                    Asignar {{ addWarriorsQuantity }}
+                </button>
             </div>
-            <div class="col-lg-6">
-                <div class="mt-4" *ngIf="showButtons('move')">
-                    <input name="warriors" type="number" [(ngModel)]="warriorsQuantity" min="1" max="{{this.sLand().warriors}}" class="form-control rounded-25" placeholder="Mover" (keyup.enter)="showMoveOptions()">
 
-                    <button class="btn btn-secondary rounded-25 btn-block mt-2" (click)="showMoveOptions()">
-                        Mover {{ warriorsQuantity }}
-                    </button>
+            <div class="row justify-content-center" *ngIf="sLand().warriors > 0">
+                <div class="col-lg-6">
+                    <div class="mt-4" *ngIf="showButtons('add')">
+                        <input name="warriors" type="number" [(ngModel)]="addWarriorsQuantity" min="1" max="{{this.turnPlayer().warriors}}" class="form-control rounded-25" placeholder="Añadir" (keyup.enter)="addWarriors()">
+
+                        <button class="btn btn-success rounded-25 btn-block mt-2" (click)="addWarriors()">
+                            Asignar {{ addWarriorsQuantity }}
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="mt-4" *ngIf="showButtons('move')">
+                        <input name="warriors" type="number" [(ngModel)]="warriorsQuantity" min="1" max="{{this.sLand().warriors}}" class="form-control rounded-25" placeholder="Mover" (keyup.enter)="showMoveOptions()">
+
+                        <button class="btn btn-secondary rounded-25 btn-block mt-2" (click)="showMoveOptions()">
+                            Mover {{ warriorsQuantity }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</ng-template>
+    </ng-template>
 
-<!-- Resultado -->
-<ng-template #attackModal let-close="close">
-    <div class="modal-header">
-        <h5 class="modal-title text-success" *ngIf="attackResult.win">Has ganado</h5>
-        <h5 class="modal-title text-danger" *ngIf="!attackResult.win">Has perdido</h5>
-        <button type="button" class="close" (click)="closeAttackModal()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Usuario</th>
-                    <th>Tropas</th>
-                    <th>Tropas</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ attackResult.attacker }}</td>
-                    <td>{{ attackWarriors.sWarriors }}</td>
-                    <td>{{ attackResult.sWarriors }}</td>
-                </tr>
-                <tr>
-                    <td>{{ attackResult.defender }}</td>
-                    <td>{{ attackWarriors.mWarriors }}</td>
-                    <td>{{ attackResult.mWarriors }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</ng-template>
+    <!-- Resultado -->
+    <ng-template #attackModal let-close="close">
+        <div class="modal-header">
+            <h5 class="modal-title text-success" *ngIf="attackResult.win">Has ganado</h5>
+            <h5 class="modal-title text-danger" *ngIf="!attackResult.win">Has perdido</h5>
+            <button type="button" class="close" (click)="closeAttackModal()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Tropas</th>
+                        <th>Tropas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ attackResult.attacker }}</td>
+                        <td>{{ attackWarriors.sWarriors }}</td>
+                        <td>{{ attackResult.sWarriors }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ attackResult.defender }}</td>
+                        <td>{{ attackWarriors.mWarriors }}</td>
+                        <td>{{ attackResult.mWarriors }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </ng-template>
+</div>
