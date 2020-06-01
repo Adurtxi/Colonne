@@ -449,10 +449,10 @@ export class HomeComponent implements OnInit {
 
     const number = Math.floor(Math.random() * 10) + 1;
 
-    let valores = [1.5, 1.3, 1.1, 1.1, 1.3, 1.5];
+    let values = [1.5, 1.3, 1.1, 1.1, 1.3, 1.5];
 
     if (sWarriors <= 20) {
-      valores = [1.3, 1.2, 1.1, 1.1, 1.2, 1.3];
+      values = [1.3, 1.2, 1.1, 1.1, 1.2, 1.3];
     }
 
 
@@ -493,22 +493,22 @@ export class HomeComponent implements OnInit {
     else {
       switch (number) {
         case 1:
-          sWarriors /= valores[0];
+          sWarriors /= values[0];
           break;
         case 2:
-          sWarriors /= valores[1];
+          sWarriors /= values[1];
           break;
         case 3:
-          sWarriors /= valores[2];
+          sWarriors /= values[2];
           break;
         case 8:
-          sWarriors *= valores[3];
+          sWarriors *= values[3];
           break;
         case 9:
-          sWarriors *= valores[4];
+          sWarriors *= values[4];
           break;
         case 10:
-          sWarriors *= valores[5];
+          sWarriors *= values[5];
           break;
       }
     }
