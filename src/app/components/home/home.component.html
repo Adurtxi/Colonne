@@ -191,7 +191,7 @@
 
                                     <div class="card-body">
                                         <ng-container *ngIf="boardLand.warriors > 0">
-                                            <img src="assets/img/icons/helmet.png" style="width: 50px;" alt="Guerrero">
+                                            <img src="assets/img/icons/warrior-white.png" style="width: 50px;" alt="Guerrero">
                                             <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
                                         </ng-container>
 
@@ -227,7 +227,7 @@
 
                                             <!-- El terreno a mover pertenece al jugador -->
                                             <ng-container *ngIf="boardLand.userId == turnPlayer().id">
-                                                <img src="assets/img/icons/person.png" style="width: 50px;" alt="Mover">
+                                                <img src="assets/img/icons/warrior-black.png" style="width: 50px;" alt="Mover">
                                                 <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
                                             </ng-container>
 
@@ -253,26 +253,41 @@
                 <!-- Jugadores -->
                 <div class="col-lg-2 col-md-6 col-sm-6 mb-5">
                     <div class="d-flex justify-content-center mb-4 bg-light rounded-25 pt-1">
-                        Tiempo:
-                        <h1 class="ml-4">{{ countdown }}</h1>
+
+                        <h1 class="text-center">
+                            <i class="fas fa-clock fa-sm mr-2"></i> {{ countdown }}
+                        </h1>
                     </div>
+
+                    <button class="btn btn-primary btn-block rounded-25 mb-4" (click)="openShopModal(shopModal)" *ngIf="game.started && turnPlayer()">
+                        <i class="fas fa-shopping-cart mr-2"></i> Tienda
+                    </button>
 
                     <div class="card rounded-25 mb-4" *ngFor="let player of players" [ngClass]=" {
                     'bg-light': game.started && player.id != turnPlayer().id,
                     'bg-dark text-light': game.started && player.id == turnPlayer().id }">
 
-                        <div class="card-body">
+                        <div class="card-body pb-0">
+                            <p>
+                                <i class="fas fa-user ml-1" [ngStyle]="{'color': player.color}"></i>
+                                <span class="float-right">{{player.name}}</span>
+                            </p>
+
                             <!-- El jugador está vivo -->
                             <ng-container *ngIf="player.alive">
+
                                 <p>
-                                    Nombre:
-                                    <span class="float-right">{{player.name}}</span>
-                                </p>
-                                <p>
-                                    Guerreros:
+                                    <img src="assets/img/icons/{{warriorImgColor(player)}}" class="ml-1" style="height: 20px;">
                                     <span class="float-right">{{player.warriors}}</span>
                                 </p>
-
+                                <p>
+                                    <i class="fas fa-coins ml-1"></i>
+                                    <span class="float-right">{{player.money}}</span>
+                                </p>
+                                <p>
+                                    <i class="fas fa-star ml-1"></i>
+                                    <span class="float-right">{{player.points}}</span>
+                                </p>
                             </ng-container>
 
                             <!-- El jugador ha muerto-->
@@ -280,23 +295,18 @@
                                 <p>Muerto en ronda {{ player.died }}</p>
                             </ng-container>
 
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="circle" [ngStyle]="{'background-color': player.color}"></div>
-                                </div>
-                                <div class="col-6">
-                                    <span class="float-right">{{player.points}}</span>
-                                </div>
-                            </div>
-
                         </div>
 
                     </div>
 
-                    <button class="btn btn-success btn-block rounded-25" (click)="startGame()" *ngIf="!game.started">
+                    <button class="btn btn-success btn-block rounded-25" (click)="startGame()" *ngIf="!game.started && turnPlayer()">
                         <i class="fas fa-gamepad mr-2"></i> Empezar
                     </button>
-                    <ng-container *ngIf="game.started">
+                    <button class="btn btn-success btn-block rounded-25" (click)="startGame()" *ngIf="game.started && !turnPlayer()">
+                        <i class="fas fa-gamepad mr-2"></i> Empezar
+                    </button>
+
+                    <ng-container *ngIf="game.started && turnPlayer()">
                         <button class="btn btn-success btn-block rounded-25" (click)="changeTurn()" *ngIf="countNotDied() > 1">
                             <i class="fas fa-forward mr-2"></i> Siguiente turno
                         </button>
@@ -324,22 +334,21 @@
             </button>
         </div>
         <div class="modal-body">
-            <ng-container *ngIf="sLand().userId > 0">
-                <p>Propietario: {{ findPlayerById(sLand().userId).name }}</p>
-                <p>Defensores: {{ sLand().warriors }}</p>
-            </ng-container>
+            <button class="btn btn-primary rounded-25 btn-block">
+                Castillo
+            </button>
 
-            <div class="mt-4" *ngIf="showButtons('add') && sLand().warriors == 0">
-                <input name="warriors" type="number" [(ngModel)]="addWarriorsQuantity" min="1" max="{{this.turnPlayer().warriors}}" class="form-control rounded-25" placeholder="Añadir" (keyup.enter)="addWarriors()">
+            <ng-container *ngIf="showButtons('add') && sLand().warriors == 0">
+                <input name="warriors" type="number" [(ngModel)]="addWarriorsQuantity" min="1" max="{{this.turnPlayer().warriors}}" class="form-control rounded-25 mt-4" placeholder="Añadir" (keyup.enter)="addWarriors()">
 
-                <button class="btn btn-success rounded-25 btn-block mt-2" (click)="addWarriors()">
+                <button class="btn btn-success rounded-25 btn-block mt-4" (click)="addWarriors()">
                     Asignar {{ addWarriorsQuantity }}
                 </button>
-            </div>
+            </ng-container>
 
             <div class="row justify-content-center" *ngIf="sLand().warriors > 0">
-                <div class="col-lg-6">
-                    <div class="mt-4" *ngIf="showButtons('add')">
+                <div class="col-lg-6 mt-4">
+                    <div *ngIf="showButtons('add')">
                         <input name="warriors" type="number" [(ngModel)]="addWarriorsQuantity" min="1" max="{{this.turnPlayer().warriors}}" class="form-control rounded-25" placeholder="Añadir" (keyup.enter)="addWarriors()">
 
                         <button class="btn btn-success rounded-25 btn-block mt-2" (click)="addWarriors()">
@@ -391,6 +400,41 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </ng-template>
+
+    <!-- Resultado -->
+    <ng-template #shopModal let-close="close">
+        <div class="modal-header">
+            <h5 class="modal-title">Tienda</h5>
+            <button type="button" class="close" (click)="closeShopModal()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+
+            <div class="row justify-content-center">
+
+                <ng-container *ngFor="let upgrade of upgrades; let i = index">
+                    <div class="col-lg-4" *ngIf="showUpgrade(i) == true">
+                        <div [ngClass]=" {'bg-dark': !showSelectedUpgrade(i),'bg-success': showSelectedUpgrade(i)}" class="card rounded-25 pointer" (click)="selectUpgrade(i)">
+
+                            <div class="card-body p-1">
+                                <img src="assets/img/cards/{{ upgrade.img }}" class="w-100 rounded-25">
+                            </div>
+
+                        </div>
+                    </div>
+                </ng-container>
+
+            </div>
+
+            <div class="d-flex justify-content-center mt-4">
+                <button class="btn btn-success btn-block rounded-25 col-8" [disabled]="sUpgradeIndex == null" (click)="buyUpgrade()">
+                    <i class="fas fa-shopping-cart mr-2"></i>
+                    Comprar
+                </button>
+            </div>
         </div>
     </ng-template>
 </div>

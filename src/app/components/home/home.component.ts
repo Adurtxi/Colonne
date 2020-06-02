@@ -10,6 +10,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 export class HomeComponent implements OnInit {
   landModal; //Modal acciones terreno
   attackModal; //Modal del resultado del ataque
+  shopModal; //Modal de tienda
 
   // Configuraciones del juego
   game = {
@@ -31,8 +32,8 @@ export class HomeComponent implements OnInit {
 
   sLandIndex; //Index del terreno seleccionado
   mLandIndex; //Index del terreno a mover
-
   playerTurnIndex = 0; // Index del usuario del turno
+  sUpgradeIndex; //Index de la tarjeta seleccionada
 
   warriorsQuantity = 1; // Cantidad de guerreros a mover
   addWarriorsQuantity = 1; // Cantidad de guerreros a añadir
@@ -51,13 +52,155 @@ export class HomeComponent implements OnInit {
     { 'id': 4, 'text': '6 x 6', 'col': 'col-2', 'cols': 36, 'row': 6, },
   ];
 
+  upgrades = [
+    { 'id': 1, 'img': 'warriors-upgrade.png', 'price': 500 },
+    { 'id': 2, 'img': 'castle-upgrade.png', 'price': 1000 },
+  ];
+
   constructor(
     private modalService: NgbModal,
   ) {
     this.board = 0;
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.players = [
+      {
+        "id": 1,
+        "name": "Adur",
+        "color": "#68c20e",
+        "warriors": 0,
+        "points": 0,
+        "money": 0,
+        "alive": true,
+        "died": 0,
+        "upgrades": {
+          "warriors": false,
+          "castle": false,
+        }
+      },
+      {
+        "id": 2,
+        "name": "Jon",
+        "color": "#d5d81f",
+        "warriors": 0,
+        "points": 0,
+        "money": 0,
+        "alive": true,
+        "died": 0,
+        "upgrades": {
+          "warriors": false,
+          "castle": false,
+        }
+      },
+      {
+        "id": 3,
+        "name": "Noe",
+        "color": "#e81010",
+        "warriors": 0,
+        "points": 0,
+        "money": 0,
+        "alive": true,
+        "died": 0,
+        "upgrades": {
+          "warriors": false,
+          "castle": false,
+        }
+      }
+    ];
+
+    this.board = {
+      "type": 3,
+      "col": "col-3",
+      "cols": 16,
+      'row': 4,
+    };
+
+    this.boardLands = [
+      {
+        "id": 1,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 2,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 3,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 4,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 5,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 6,
+        "warriors": 3,
+        "userId": 2
+      },
+      {
+        "id": 7,
+        "warriors": 5,
+        "userId": 3
+      },
+      {
+        "id": 8,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 9,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 10,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 11,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 12,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 13,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 14,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 15,
+        "warriors": 0,
+        "userId": 0
+      },
+      {
+        "id": 16,
+        "warriors": 0,
+        "userId": 0
+      }
+    ];
+
+    this.game.view = true;
+  }
 
   // Fondo de la página
   gameBackground() {
@@ -76,8 +219,13 @@ export class HomeComponent implements OnInit {
           'color': '#fff',
           'warriors': 0,
           'points': 0,
+          'money': 0,
           'alive': true,
           'dead': 0,
+          'upgrades': {
+            'warriors': false,
+            'castle': false,
+          }
         }
       );
     }
@@ -226,6 +374,7 @@ export class HomeComponent implements OnInit {
     this.game.roundNumber += 1;
 
     let warriors = Math.round((Math.random() * this.players.length) + (this.game.roundNumber / 20));
+    this.turnPlayer().money = Math.round((this.game.roundNumber * 50));
 
     if (warriors == 0) {
       warriors = 1;
@@ -610,8 +759,74 @@ export class HomeComponent implements OnInit {
   }
 
   /*******************************************************************************************/
+  /*                                        TIENDA                                           */
+  /*******************************************************************************************/
+
+  // Abrir modal de la tienda
+  openShopModal(shopModal) {
+    this.shopModal = this.modalService.open(shopModal, { centered: true });
+  }
+
+  // Cerrar tienda
+  closeShopModal() {
+    this.shopModal.close();
+  }
+
+  showUpgrade(upgradeIndex) {
+    if (upgradeIndex == 0 && this.turnPlayer().upgrades.warriors == false) {
+      return true;
+    } else if (upgradeIndex == 1 && this.turnPlayer().upgrades.castle == false) {
+      return true;
+    }
+
+    return false;
+  }
+
+  showSelectedUpgrade(upgradeIndex) {
+    if (this.sUpgradeIndex == upgradeIndex) {
+      return true;
+    }
+
+    return false;
+  }
+
+  selectUpgrade(upgradeIndex) {
+    if ((this.turnPlayer().money - this.upgrades[upgradeIndex].price) >= 0) {
+      this.sUpgradeIndex = upgradeIndex;
+    }
+  }
+
+  buyUpgrade() {
+    this.sUpgradeIndex = null;
+
+    this.turnPlayer().money -= this.sUpgrade().price;
+
+    switch (this.sUpgradeIndex) {
+      case 0:
+        this.turnPlayer().upgrades.warriors = true;
+        break;
+
+      case 1:
+
+        this.turnPlayer().upgrades.castle = true;
+        break;
+    }
+  }
+
+  /*******************************************************************************************/
   /*                                         OTROS                                           */
   /*******************************************************************************************/
+
+  // Color de la imagen
+  warriorImgColor(player) {
+    if (!this.game.started) {
+      return 'warrior-black-sm.png';
+    } else if (this.game.started && player.id != this.turnPlayer().id) {
+      return 'warrior-black-sm.png';
+    }
+
+    return 'warrior-white-sm.png';
+  }
 
   // Buscar jugador por ID
   findPlayerById(id: number) {
@@ -629,6 +844,10 @@ export class HomeComponent implements OnInit {
 
   mLand() {
     return this.boardLands[this.mLandIndex];
+  }
+
+  sUpgrade() {
+    return this.upgrades[this.sUpgradeIndex];
   }
 }
 
