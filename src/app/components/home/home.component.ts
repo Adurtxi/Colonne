@@ -797,8 +797,6 @@ export class HomeComponent implements OnInit {
   }
 
   buyUpgrade() {
-    this.sUpgradeIndex = null;
-
     this.turnPlayer().money -= this.sUpgrade().price;
 
     switch (this.sUpgradeIndex) {
@@ -811,6 +809,8 @@ export class HomeComponent implements OnInit {
         this.turnPlayer().upgrades.castle = true;
         break;
     }
+
+    this.sUpgradeIndex = null;
   }
 
   /*******************************************************************************************/
