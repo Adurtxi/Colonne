@@ -52,6 +52,8 @@ export class HomeComponent implements OnInit {
   move = false;
   count = 0;
 
+  tictac = false;
+
   boardTypes = [
     { 'id': 1, 'text': '2 x 2', 'col': 'col-6', 'cols': 4, 'row': 2, },
     { 'id': 2, 'text': '3 x 3', 'col': 'col-4', 'cols': 9, 'row': 3, },
@@ -314,8 +316,6 @@ export class HomeComponent implements OnInit {
 
   // Empezar los turnos
   startGame() {
-    this.openVictoryModal();
-
     this.game.started = true;
     this.game.paused = false;
     this.count = this.players.length;
@@ -367,6 +367,8 @@ export class HomeComponent implements OnInit {
   //Cambiar turno
   changeTurn() {
     if (this.count > 1) {
+      this.tictac = false;
+
       const playerIndex = this.nextPlayer(this.playerTurnIndex + 1);
 
       this.addTurn(playerIndex);
@@ -432,12 +434,27 @@ export class HomeComponent implements OnInit {
       await this.delay();
       this.countdown -= 1;
 
+      if (this.countdown <= 5) {
+        this.playAudio();
+      }
+
       if (this.countdown == 0) {
         this.changeTurn();
       }
     }
 
     this.timer();
+  }
+
+  playAudio() {
+    if (!this.tictac) {
+      this.tictac = true;
+
+      let audio = new Audio();
+      audio.src = "assets/audio/tictac.mp3";
+      audio.load();
+      audio.play();
+    }
   }
 
   delay() {
@@ -842,6 +859,8 @@ export class HomeComponent implements OnInit {
           this.players[i].died = this.game.roundNumber;
         }
       }
+
+      this.countNotDied();
     }
   }
 
@@ -854,6 +873,10 @@ export class HomeComponent implements OnInit {
         if (this.players[i].alive) {
           this.count++;
         }
+      }
+
+      if (this.count == 1) {
+        this.openVictoryModal();
       }
     }
   }
