@@ -130,8 +130,8 @@
                             </div>
                             <div class="col-lg-4 col-sm-12">
                                 <div class="form-group">
-                                    <label for="roundTime">Rondas maximas</label>
-                                    <select class="form-control rounded-25" name="maxRounds" id="roundTime" [(ngModel)]="game.maxRounds">
+                                    <label for="maxRounds">Rondas maximas</label>
+                                    <select class="form-control rounded-25" name="maxRounds" id="maxRounds" [(ngModel)]="game.maxRounds">
                                         <ng-container *ngFor="let i of [0,10,20,30,40,50,60,70,80,90,100]">
                                             <option [value]="i">
                                                 <span *ngIf="i == 0">Sin límite</span>
@@ -143,11 +143,31 @@
                             </div>
                             <div class="col-lg-4 col-sm-12">
                                 <div class="form-group">
-                                    <label for="warriorsQuantity">Velocidad</label>
+                                    <label for="velocity">Velocidad</label>
                                     <select class="form-control rounded-25" id="velocity" name="velocity" [(ngModel)]="game.velocity">
                                         <option value="0">Lenta</option>
                                         <option value="1">Normal</option>
                                         <option value="2">Rápida</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-sm-12">
+                                <div class="form-group">
+                                    <label for="maxWarriors">Máximo de guerreros</label>
+                                    <select class="form-control rounded-25" id="maxWarriors" name="maxWarriors" [(ngModel)]="game.maxWarriors">
+                                        <option value="10">10</option>
+                                        <option value="20">20</option>
+                                        <option value="30">30</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-sm-12">
+                                <div class="form-group">
+                                    <label for="maxMoney">Máximo de dinero</label>
+                                    <select class="form-control rounded-25" id="maxMoney" name="maxMoney" [(ngModel)]="game.maxMoney">
+                                        <option value="1000">1000</option>
+                                        <option value="2000">2000</option>
+                                        <option value="3000">3000</option>
                                     </select>
                                 </div>
                             </div>
@@ -190,12 +210,22 @@
                                 && {'background-color': findPlayerById(boardLand.userId).color, 'color': '#fff'}" [class.pointer]="boardLand.userId == turnPlayer().id || boardLand.userId == 0">
 
                                     <div class="card-body">
-                                        <ng-container *ngIf="boardLand.warriors > 0">
+                                        <ng-container *ngIf="boardLand.warriors > 0 && boardLand.castle">
+                                            <img src="assets/img/icons/castle-warriors.png" style="width: 50px;" alt="Castillo con guerreros">
+                                            <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="boardLand.warriors == 0 && boardLand.castle">
+                                            <img src="assets/img/icons/castle-empty.png" style="width: 50px;" alt="Castillo">
+                                            <h1 class="float-right mr-1 mt-2">0</h1>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="boardLand.warriors > 0 && !boardLand.castle">
                                             <img src="assets/img/icons/warrior-white.png" style="width: 50px;" alt="Guerrero">
                                             <h1 class="float-right mr-1 mt-2">{{boardLand.warriors}}</h1>
                                         </ng-container>
 
-                                        <ng-container *ngIf="boardLand.warriors == 0">
+                                        <ng-container *ngIf="boardLand.warriors == 0 && !boardLand.castle">
                                             <img src="assets/img/icons/land.png" style="width: 50px;" alt="Terreno">
                                         </ng-container>
                                     </div>
@@ -207,7 +237,7 @@
                         <!-- Terrenos a donde desplazarse -->
                         <ng-container *ngIf="move">
                             <div [class]="['mb-4', board.col]" *ngFor="let boardLand of boardLands; let i = index">
-                                <div class="card rounded-25" (click)="selectTerrainToMove(attackModal, i)" [ngStyle]="canMove(i) 
+                                <div class="card rounded-25" (click)="selectTerrainToMove(i)" [ngStyle]="canMove(i) 
                                 && {'background-color': turnPlayer().color, 'color': '#fff'}" [class.pointer]="canMove(i)">
 
                                     <div class="card-body">
@@ -275,14 +305,17 @@
 
                             <!-- El jugador está vivo -->
                             <ng-container *ngIf="player.alive">
-
                                 <p>
                                     <img src="assets/img/icons/{{warriorImgColor(player)}}" class="ml-1" style="height: 20px;">
-                                    <span class="float-right">{{player.warriors}}</span>
+                                    <span class="float-right">
+                                        <span class="text-success">{{player.warriors}}</span> / {{ game.maxWarriors }}
+                                    </span>
                                 </p>
                                 <p>
                                     <i class="fas fa-coins ml-1"></i>
-                                    <span class="float-right">{{player.money}}</span>
+                                    <span class="float-right">
+                                        <span class="text-success">{{player.money}}</span> / {{ game.maxMoney }}
+                                    </span>
                                 </p>
                                 <p>
                                     <i class="fas fa-star ml-1"></i>
@@ -307,14 +340,14 @@
                     </button>
 
                     <ng-container *ngIf="game.started && turnPlayer()">
-                        <button class="btn btn-success btn-block rounded-25" (click)="changeTurn()" *ngIf="countNotDied() > 1">
+                        <button class="btn btn-success btn-block rounded-25" (click)="changeTurn()" *ngIf="count > 1">
                             <i class="fas fa-forward mr-2"></i> Siguiente turno
                         </button>
-                        <button class="btn btn-success btn-block rounded-25" (click)="restart()" *ngIf="countNotDied() <= 1">
+                        <button class="btn btn-success btn-block rounded-25" (click)="restart()" *ngIf="count <= 1">
                             <i class="fas fa-redo-alt mr-2"></i> Jugar de nuevo
                         </button>
 
-                        <button class="btn btn-dark btn-block rounded-25" (click)="pauseGame()" *ngIf="countNotDied() > 1">
+                        <button class="btn btn-dark btn-block rounded-25" (click)="pauseGame()" *ngIf="count > 1">
                             <span *ngIf="game.paused"><i class="fas fa-hourglass-start mr-2"></i> Reanudar</span>
                             <span *ngIf="!game.paused"><i class="fas fa-hourglass-end mr-2"></i> Pausar</span>
                         </button>
@@ -334,7 +367,7 @@
             </button>
         </div>
         <div class="modal-body">
-            <button class="btn btn-primary rounded-25 btn-block">
+            <button class="btn btn-primary rounded-25 btn-block" [disabled]="turnPlayer().money < 500" (click)="buyCastle()" *ngIf="sLand().userId == turnPlayer().id">
                 Castillo
             </button>
 
@@ -403,7 +436,7 @@
         </div>
     </ng-template>
 
-    <!-- Resultado -->
+    <!-- Tienda -->
     <ng-template #shopModal let-close="close">
         <div class="modal-header">
             <h5 class="modal-title">Tienda</h5>
@@ -417,7 +450,10 @@
 
                 <ng-container *ngFor="let upgrade of upgrades; let i = index">
                     <div class="col-lg-4" *ngIf="showUpgrade(i) == true">
-                        <div [ngClass]=" {'bg-dark': !showSelectedUpgrade(i),'bg-success': showSelectedUpgrade(i)}" class="card rounded-25 pointer" (click)="selectUpgrade(i)">
+                        <div [ngClass]=" {
+                            'bg-dark': !showSelectedUpgrade(i),
+                            'bg-success': showSelectedUpgrade(i), 
+                            'pointer': turnPlayer().money >= upgrade.price}" class="card rounded-25 pointer" (click)="selectUpgrade(i)">
 
                             <div class="card-body p-1">
                                 <img src="assets/img/cards/{{ upgrade.img }}" class="w-100 rounded-25">
@@ -435,6 +471,19 @@
                     Comprar
                 </button>
             </div>
+        </div>
+    </ng-template>
+
+    <!-- Victoria -->
+    <ng-template #victoryModal let-close="close">
+        <div class="modal-header">
+            <h5 class="modal-title">Partida</h5>
+            <button type="button" class="close" (click)="closeVictoryModal()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <h1>Has ganado</h1>
         </div>
     </ng-template>
 </div>

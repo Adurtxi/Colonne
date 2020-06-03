@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -8,9 +8,13 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 })
 
 export class HomeComponent implements OnInit {
+  @ViewChild('victoryModal') private victoryModalContent;
+  @ViewChild('attackModal') private attackModalContent;
+
   landModal; //Modal acciones terreno
   attackModal; //Modal del resultado del ataque
   shopModal; //Modal de tienda
+  victoryModal; //Modal del ganador
 
   // Configuraciones del juego
   game = {
@@ -21,6 +25,8 @@ export class HomeComponent implements OnInit {
     'roundTime': 30,
     'paused': false,
     'maxRounds': 0,
+    'maxWarriors': 20,
+    'maxMoney': 2000,
     'velocity': 1,
   };
 
@@ -44,6 +50,7 @@ export class HomeComponent implements OnInit {
   attackResult; // Resultado del ataque
 
   move = false;
+  count = 0;
 
   boardTypes = [
     { 'id': 1, 'text': '2 x 2', 'col': 'col-6', 'cols': 4, 'row': 2, },
@@ -120,82 +127,98 @@ export class HomeComponent implements OnInit {
       {
         "id": 1,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 2,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 3,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 4,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 5,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 6,
         "warriors": 3,
-        "userId": 2
+        "userId": 2,
+        "castle": false,
       },
       {
         "id": 7,
         "warriors": 5,
-        "userId": 3
+        "userId": 3,
+        "castle": false,
       },
       {
         "id": 8,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 9,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 10,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 11,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 12,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 13,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 14,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 15,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       },
       {
         "id": 16,
         "warriors": 0,
-        "userId": 0
+        "userId": 0,
+        "castle": false,
       }
     ];
 
@@ -255,6 +278,7 @@ export class HomeComponent implements OnInit {
             'id': b + 1,
             'userId': 0,
             'warriors': 0,
+            'castle': false,
           }
         );
       }
@@ -290,8 +314,11 @@ export class HomeComponent implements OnInit {
 
   // Empezar los turnos
   startGame() {
+    this.openVictoryModal();
+
     this.game.started = true;
     this.game.paused = false;
+    this.count = this.players.length;
 
     this.firstTurn();
 
@@ -313,8 +340,10 @@ export class HomeComponent implements OnInit {
       'background': 1,
       'roundNumber': 0,
       'roundTime': 30,
-      'paused': true,
+      'paused': false,
       'maxRounds': 0,
+      'maxWarriors': 20,
+      'maxMoney': 2000,
       'velocity': 1,
     };
 
@@ -337,12 +366,12 @@ export class HomeComponent implements OnInit {
 
   //Cambiar turno
   changeTurn() {
-    if (this.countNotDied() > 1) {
+    if (this.count > 1) {
       const playerIndex = this.nextPlayer(this.playerTurnIndex + 1);
 
       this.addTurn(playerIndex);
 
-      this.finishGame();
+      this.killPlayers();
 
       this.resetPlayerChanges();
 
@@ -374,7 +403,7 @@ export class HomeComponent implements OnInit {
     this.game.roundNumber += 1;
 
     let warriors = Math.round((Math.random() * this.players.length) + (this.game.roundNumber / 20));
-    this.turnPlayer().money = Math.round((this.game.roundNumber * 50));
+    const money = Math.round((this.game.roundNumber * 50));
 
     if (warriors == 0) {
       warriors = 1;
@@ -383,10 +412,17 @@ export class HomeComponent implements OnInit {
     }
 
     // No acumular más de 20 guerreros
-    if ((this.turnPlayer().warriors + warriors) > 20) {
-      this.players[playerIndex].warriors = 20;
+    if ((this.turnPlayer().warriors + warriors) > this.game.maxWarriors) {
+      this.turnPlayer().warriors = this.game.maxWarriors;
     } else {
-      this.players[playerIndex].warriors += warriors;
+      this.turnPlayer().warriors += warriors;
+    }
+
+    // No acumular más de 2000 monedas
+    if ((this.turnPlayer().money + money) > this.game.maxMoney) {
+      this.turnPlayer().money = this.game.maxMoney;
+    } else {
+      this.turnPlayer().money += money;
     }
   }
 
@@ -450,9 +486,9 @@ export class HomeComponent implements OnInit {
   }
 
   // Mover guerreros
-  selectTerrainToMove(attackModal, landIndex) {
+  selectTerrainToMove(landIndex) {
     this.mLandIndex = landIndex;
-    this.moveWarriors(attackModal);
+    this.moveWarriors();
   }
 
   // Mostrar las tierras a las que se pueden mover los guerreros
@@ -554,39 +590,36 @@ export class HomeComponent implements OnInit {
   }
 
   // Mover los guerreros
-  moveWarriors(attackModal) {
-    if (this.selectableTerrains.findIndex(terrain => terrain == this.mLandIndex) != -1) {
+  moveWarriors() {
+    // El terreno destino no tiene dueño o es del jugador
+    if (this.mLand().userId == 0 || this.mLand().userId == this.turnPlayer().id) {
+      this.mLand().userId = this.turnPlayer().id;
+      this.mLand().warriors += this.warriorsQuantity;
 
-      // Si el terreno destino no tiene dueño asignamos jugador 
-      if (this.mLand().userId == 0 || this.mLand().userId == this.turnPlayer().id) {
+    }
+    // El terreno destino tiene dueño
+    else {
+      const result = this.attack(this.warriorsQuantity, this.mLand().warriors);
+
+      this.mLand().warriors = result['mWarriors'];
+
+      if (this.mLand().warriors == 0) {
         this.mLand().userId = this.turnPlayer().id;
-        this.mLand().warriors += this.warriorsQuantity;
-
-      } else {
-        const result = this.attack(this.warriorsQuantity, this.mLand().warriors);
-
-        this.mLand().warriors = result['mWarriors'];
-
-        if (this.mLand().warriors == 0) {
-          this.mLand().userId = this.turnPlayer().id;
-          this.mLand().warriors = result['sWarriors'];
-        }
-
-        // Mostrar resultado ataque
-        this.openAttackModal(attackModal);
+        this.mLand().warriors = result['sWarriors'];
       }
 
-      this.sLand().warriors -= this.warriorsQuantity;
-
-      // Si el terreno se queda vacío quitar al usuario
-      if (this.sLand().warriors == 0) {
-        this.sLand().userId = 0;
-      }
-
-      this.changeTurn();
+      // Mostrar resultado ataque
+      this.openAttackModal();
     }
 
-    this.move = false;
+    this.sLand().warriors -= this.warriorsQuantity;
+
+    // Si el terreno se queda vacío y no hay castillo quitar al usuario
+    if (this.sLand().warriors == 0 && !this.sLand().castle) {
+      this.sLand().userId = 0;
+    }
+
+    this.changeTurn();
   }
 
   // Algoritmo de ataque
@@ -717,8 +750,8 @@ export class HomeComponent implements OnInit {
   }
 
   // Abrir modal del ataque
-  openAttackModal(attackModal) {
-    this.attackModal = this.modalService.open(attackModal, { size: 'sm', centered: true });
+  openAttackModal() {
+    this.attackModal = this.modalService.open(this.attackModalContent, { size: 'sm', centered: true });
   }
 
   // Cerrar ataque
@@ -726,35 +759,15 @@ export class HomeComponent implements OnInit {
     this.attackModal.close();
   }
 
-  finishGame() {
-    if (this.countNotDied() == 1) {
-      console.log('Has ganado');
-    }
+  /*******************************************************************************************/
+  /*                                       CASTILLOS                                         */
+  /*******************************************************************************************/
 
-    else if (this.game.roundNumber > this.players.length) {
+  buyCastle() {
+    if (this.turnPlayer().money >= 500) {
+      this.turnPlayer().money -= 500;
 
-      for (let i = 0; i < this.players.length; i++) {
-        const landExist = this.boardLands.some(land => land.userId == this.players[i].id);
-
-        if (!landExist && this.players[i].alive) {
-          this.players[i].alive = false;
-          this.players[i].died = this.game.roundNumber;
-        }
-      }
-    }
-  }
-
-  countNotDied() {
-    if (this.game.started == true) {
-      let count = 0;
-
-      for (let i = 0; i < this.players.length; i++) {
-        if (this.players[i].alive) {
-          count++;
-        }
-      }
-
-      return count;
+      this.sLand().castle = true;
     }
   }
 
@@ -811,6 +824,48 @@ export class HomeComponent implements OnInit {
     }
 
     this.sUpgradeIndex = null;
+  }
+
+  /*******************************************************************************************/
+  /*                                        VICTORIA                                         */
+  /*******************************************************************************************/
+
+  // Comprobar si el juego se ha terminado
+  killPlayers() {
+    if (this.game.roundNumber > this.players.length) {
+
+      for (let i = 0; i < this.players.length; i++) {
+        const landExist = this.boardLands.some(land => land.userId == this.players[i].id);
+
+        if (!landExist && this.players[i].alive) {
+          this.players[i].alive = false;
+          this.players[i].died = this.game.roundNumber;
+        }
+      }
+    }
+  }
+
+  // Contar cuantos jugadores están vivos
+  countNotDied() {
+    if (this.game.started == true) {
+      this.count = 0;
+
+      for (let i = 0; i < this.players.length; i++) {
+        if (this.players[i].alive) {
+          this.count++;
+        }
+      }
+    }
+  }
+
+  // Abrir modal de la victoria
+  openVictoryModal() {
+    this.victoryModal = this.modalService.open(this.victoryModalContent, { centered: true });
+  }
+
+  // Cerrar modal de la victoria
+  closeVictoryModal() {
+    this.victoryModal.close();
   }
 
   /*******************************************************************************************/
