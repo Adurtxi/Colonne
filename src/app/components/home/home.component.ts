@@ -490,23 +490,46 @@ export class HomeComponent implements OnInit {
 
   // Algoritmo de ataque
   attack(sWarriors: number, mWarriors: number) {
+    // Guerreros en batalla
     this.attackWarriors = {
+      'castle': this.mLand().castle,
       'sWarriors': sWarriors,
       'mWarriors': mWarriors
+    }
+
+    // Hacer más fuertes los guerreros en caso de estar mejorados
+    if (this.turnPlayer().upgrades.warriors) {
+      sWarriors *= 1.5;
+    } if (this.findPlayerById(this.mLand().userId).upgrades.warriors) {
+      mWarriors *= 1.5;
     }
 
     const number = Math.floor(Math.random() * 10) + 1;
 
     let values = [1.5, 1.3, 1.1, 1.1, 1.3, 1.5];
-
-    if (sWarriors <= 20) {
+    // En caso de ser pocos guerreros no hacerlos ni muy fuertes ni muy débiles
+    if (sWarriors <= 20 || mWarriors <= 20) {
       values = [1.3, 1.2, 1.1, 1.1, 1.2, 1.3];
     }
 
+    let castleDefence = 0;
+
+    // El defensor tiene castillo
+    if (this.mLand().castle) {
+
+      // El defensor tiene el castillo mejorado
+      if (this.findPlayerById(this.mLand().userId).upgrades.castle) {
+        // La fuerza del castillo es el 35% de los guerreros
+        castleDefence = Math.round(mWarriors * 0.35);
+      } else {
+        // La fuerza del castillo es el 20% de los guerreros
+        castleDefence = Math.round(mWarriors * 0.2);
+      }
+
+    }
 
     // Mucha diferencia del atacante al defensor
-    if ((sWarriors / mWarriors) > 10) {
-
+    if ((sWarriors / mWarriors) > 6) {
       const option = Math.floor(Math.random() * 3) + 1;
 
       switch (option) {
@@ -522,7 +545,7 @@ export class HomeComponent implements OnInit {
       }
     }
 
-    else if ((mWarriors / sWarriors) > 10) {
+    else if ((mWarriors / sWarriors) > 6) {
       const option = Math.floor(Math.random() * 3) + 1;
 
       switch (option) {
@@ -536,9 +559,7 @@ export class HomeComponent implements OnInit {
           mWarriors = mWarriors - sWarriors;
           break;
       }
-    }
-
-    else {
+    } else {
       switch (number) {
         case 1:
           sWarriors /= values[0];
@@ -563,20 +584,36 @@ export class HomeComponent implements OnInit {
 
     const attack = sWarriors - mWarriors;
 
-    let win;
+    let victory;
 
     // Gana
     if (sWarriors > mWarriors) {
-      win = true;
+      victory = true;
       mWarriors = 0;
       sWarriors = attack;
 
       if (sWarriors < 1) {
         sWarriors = 1;
       }
+
+      if (castleDefence > 0 && sWarriors / (mWarriors + castleDefence) < 4) {
+        this.mLand().castle = false;
+      }
+
       // Pierde
     } else if (sWarriors < mWarriors) {
-      win = false;
+
+      if (castleDefence > 0) {
+        // Atacar primero el castillo
+        sWarriors -= castleDefence;
+
+        // Una vez roto el castillo quedan guerreros
+        if (sWarriors >= 0) {
+          this.mLand().castle = false;
+        }
+      }
+
+      victory = false;
       mWarriors -= sWarriors;
 
       if (mWarriors < 1) {
@@ -589,13 +626,22 @@ export class HomeComponent implements OnInit {
     // Empate
     else {
       if (number == 4 || number == 5) {
-        win = true;
+        victory = true;
         sWarriors = 1;
         mWarriors = 0;
+
+        if (castleDefence > 0) {
+          this.mLand().castle = false;
+        }
+
       } else if (number == 6 || number == 7) {
-        win = false;
+        victory = false;
         sWarriors = 0;
         mWarriors = 1;
+
+        if (castleDefence > 0) {
+          this.mLand().castle = false;
+        }
       }
     }
 
@@ -605,7 +651,8 @@ export class HomeComponent implements OnInit {
     const attackResult = {
       'attacker': this.turnPlayer().name,
       'defender': this.findPlayerById(this.mLand().userId).name,
-      'win': win,
+      'victory': victory,
+      'castle': this.mLand().castle,
       'sWarriors': sWarriors,
       'mWarriors': mWarriors,
     };

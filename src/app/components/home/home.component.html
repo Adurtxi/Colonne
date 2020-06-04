@@ -390,7 +390,7 @@
         <div class="col-lg-6 mt-4">
           <div *ngIf="showButtons('add')">
             <input name="warriors" type="number" [(ngModel)]="addWarriorsQuantity" min="1"
-              max="{{ this.turnPlayer().warriors }}" class="form-control rounded-25" placeholder="Añadir"
+              max="{{ this.turnPlayer().warriors }}" class="form-control rounded-25" placeholder="Asignar"
               (keyup.enter)="addWarriors()" />
 
             <button class="btn btn-success rounded-25 btn-block mt-2" (click)="addWarriors()">
@@ -416,10 +416,10 @@
   <!-- Resultado -->
   <ng-template #attackModal let-close="close">
     <div class="modal-header">
-      <h5 class="modal-title text-success" *ngIf="attackResult.win">
+      <h5 class="modal-title text-success" *ngIf="attackResult.victory">
         Has ganado
       </h5>
-      <h5 class="modal-title text-danger" *ngIf="!attackResult.win">
+      <h5 class="modal-title text-danger" *ngIf="!attackResult.victory">
         Has perdido
       </h5>
       <button type="button" class="close" (click)="closeAttackModal()">
