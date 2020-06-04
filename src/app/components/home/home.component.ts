@@ -28,6 +28,7 @@ export class HomeComponent implements OnInit {
     'maxWarriors': 20,
     'maxMoney': 2000,
     'velocity': 1,
+    'sound': true,
   };
 
   countdown = this.game.roundTime;
@@ -187,11 +188,12 @@ export class HomeComponent implements OnInit {
       'background': 1,
       'roundNumber': 0,
       'roundTime': 30,
-      'paused': false,
+      'paused': true,
       'maxRounds': 0,
       'maxWarriors': 20,
       'maxMoney': 2000,
       'velocity': 1,
+      'sound': true,
     };
 
     this.move = false;
@@ -294,7 +296,7 @@ export class HomeComponent implements OnInit {
   }
 
   playAudio() {
-    if (!this.tictac) {
+    if (!this.tictac && this.game.sound) {
       this.tictac = true;
 
       let audio = new Audio();

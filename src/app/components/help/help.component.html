@@ -1,1 +1,30 @@
-<p>help works!</p>
+<div class="background-image" [ngStyle]="{ 'background-image': 'url(assets/img/backgrounds/background1.jpg)'}">
+  <div class="container background-image">
+
+    <div class="row justify-content-center">
+
+      <div class="col-lg-10 col-sm-12 mt-4">
+        <div class="card rounded-25">
+          <div class="card-body">
+
+            <div class="form-group">
+              <select class="form-control rounded-25" name="languaje" [(ngModel)]="languaje">
+                <option value="0">English</option>
+                <option value="1">Español</option>
+              </select>
+            </div>
+
+            <ng-container *ngFor="let instruction of getInstruccions()">
+              <h1>{{ instruction.title }}</h1>
+              <hr>
+              <p>{{ instruction.description }}</p>
+            </ng-container>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
