@@ -249,7 +249,7 @@
 
                       <!-- El jugador no puede moverse y el terreno está ocupado-->
                       <ng-container *ngIf="!canMove(i) && boardLand.userId != 0 && boardLand.userId != turnPlayer().id">
-                        <img src="assets/img/icons/castle.png" style="width: 50px;" alt="Atacar" />
+                        <img src="assets/img/icons/castle-empty.png" style="width: 50px;" alt="Atacar" />
                         <h1 class="float-right mr-1 mt-2">
                           {{ boardLand.warriors }}
                         </h1>
@@ -448,6 +448,16 @@
           </tr>
         </tbody>
       </table>
+
+      <div class="row mt-4" *ngIf="attackWarriors.castle">
+        <div class="col-6">
+          <img src="assets/img/icons/castle-warriors.png" class="w-100">
+        </div>
+        <div class="col-6">
+          <img src="assets/img/icons/castle-warriors.png" class="w-100" *ngIf="attackResult.castle">
+          <img src="assets/img/icons/castle-fire.png" class="w-100" *ngIf="!attackResult.castle">
+        </div>
+      </div>
     </div>
   </ng-template>
 
